@@ -1,0 +1,77 @@
+<ion-header translucent>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Search CAF</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-text *ngIf="this.customerName">Customer Name</ion-text>
+  <ion-card>
+    <ion-item>
+      <ion-input required type="text" [(ngModel)]="customerName" placeholder="Customer Name"></ion-input>
+    </ion-item>
+  </ion-card>
+
+
+  <ion-text *ngIf="this.cafNumber"> CAF Number</ion-text>
+  <ion-card>
+    <ion-item>
+      <ion-input type="text" [(ngModel)]="cafNumber" type="text" placeholder="CAF Number"></ion-input>
+    </ion-item>
+  </ion-card>
+
+  
+  <ion-text *ngIf="this.mobileNumber">Mobile Number</ion-text>
+  <ion-card>
+    <ion-item>
+      <ion-input type="tel" maxlength="13" [(ngModel)]="mobileNumber" placeholder="Mobile Number"></ion-input>
+    </ion-item>
+  </ion-card>
+
+  
+  <ion-item>
+    <ion-label>Select  Date</ion-label>
+    <ion-datetime  displayFormat="DD MMM YYYY" pickerFormat="DD MMM YYYY"  [max] ="this.currentDate"    [(ngModel)]="this.dateFromPicker"></ion-datetime>
+  </ion-item>
+
+
+
+  <div align="center">
+    
+    <ion-button shape="round" size="medium" fill="outline" (click)="search()" style="text-transform: none"
+      color="primary"><ion-icon name="search-outline" size="small" slot="start"></ion-icon>Search</ion-button>
+  </div>
+
+  <ion-card class="main-card ion-no-padding"  *ngIf="searchItems.length > 0">
+    <ion-card-content>
+       
+        
+              <ion-card id="searchCard" (click)="editCaf(i)" *ngFor="let item of searchItems;let i = index"
+                style="color: black; background-color: white;  align-items: center; text-align: center;">
+        
+                <ion-label>
+                  <p style="font-weight: normal; font-size: 1em;color: black"><b> Customer Name : </b> <span>{{item.customerName}}</span></p>
+                  <p style="font-weight: normal; font-size: 1em; color: black"> <b>CAF Number : </b> <span>{{item.cafNumber}}</span></p>
+                  <p *ngIf="item.cafStatus.startsWith('R')" style="font-weight: normal; font-size: 1em;color: black"> <b>CAF Status : </b> <span style="color: red;font-weight: bold" >{{item.cafStatus}}</span></p>
+                  <p *ngIf="item.cafStatus.startsWith('A')" style="font-weight: normal; font-size: 1em;color: black"> <b>CAF Status : </b> <span style="color: green;font-weight: bold" >{{item.cafStatus}}</span></p>
+                  <p *ngIf="item.cafStatus.startsWith('U')" style="font-weight: normal; font-size: 1em;color: black"> <b>CAF Status : </b> <span>{{item.cafStatus}}</span></p>
+                  <p *ngIf="item.cafStatus.startsWith('P') " style="font-weight: normal; font-size: 1em;color: black"> <b>CAF Status : </b> <span style="color: red;font-weight: bold" >{{item.cafStatus}}</span></p>
+        
+                  <p style="font-weight: normal; font-size: 1em;color: black"> <b>Uploaded Date : </b> <span>{{item.uploadedDate}}
+                  </span></p>
+                  <p style="font-weight: normal; font-size: 1em;color: black"> <b>Approved Date : </b>
+                    <span>{{item.cafApprovedDatetime}}</span></p>
+        
+                </ion-label>
+        
+              </ion-card>
+        
+           
+
+
+    </ion-card-content>
+  </ion-card>
+  </ion-content>

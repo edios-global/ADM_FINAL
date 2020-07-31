@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button color="light" menu="home_side_menu">
+      </ion-menu-button>
+    </ion-buttons>
+    <ion-title>Contact Us</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content padding class="about_us">
+  <ion-card-content no-padding>
+
+    <div style="margin-top: 20px; text-align: center; margin-bottom: 20px"> </div>
+   
+    <ion-item lines="none">
+      <h1 style="text-align: left;">Feel free to call </h1>
+    </ion-item>
+
+    <ion-item style="margin-top: 30px" (click)=call(this.contactNumber1)>
+      <ion-label>{{name1}} - {{contactNumber1}}</ion-label>
+      <ion-icon name="call" color="primary" slot="end"></ion-icon>
+     
+    </ion-item>
+
+    <ion-item (click)=call(this.contactNumber2)>
+     
+      <ion-label>{{name2}} - {{contactNumber2}}</ion-label>
+      <ion-icon name="call" color="primary" slot="end"></ion-icon>
+    
+    </ion-item>
+
+  </ion-card-content>
+</ion-content>

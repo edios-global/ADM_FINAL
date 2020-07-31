@@ -1,0 +1,109 @@
+<ion-header>
+  <ion-toolbar color="#4d71d7">
+    <ion-buttons slot="start">
+      <ion-menu-button color="light" menu="home_side_menu">
+      </ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ folder }}</ion-title>
+
+    <ion-buttons slot="end" style="margin-right: 5px;">
+      <ion-button (click)="dashboard()">
+        <ion-icon name="search-outline" style="margin-right: 10px" size="medium" style="font-size: 23px;"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+
+<div id="myModal" class="modal-dialog modal-dialog-scrollable">
+    ...
+  </div>
+
+<ion-content [fullscreen]="true" style="background: #fff">
+
+  
+  <div>
+    <h1 style="text-align: center;"><u>Dashboard MTD </u></h1>
+  </div>
+
+
+  <ion-item lines="none">
+    <ion-grid>
+      <ion-row>
+        <ion-col class="d_row" style="text-align: center" class="bgcolor" size="4" text-center><b>Uploaded Count</b>
+        </ion-col>
+        <ion-col class="d_row" class="bgcolor" size="4" text-center><b>Rejected Count</b></ion-col>
+        <ion-col class="d_row" class="bgcolor" size="4" text-center><b>Approved Count</b></ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col class="d_row" size="4" text-center> {{ cafeCount.uploadedCount }}</ion-col>
+        <ion-col class="d_row" size="4" text-center> {{ cafeCount.rejectedCount }}</ion-col>
+        <ion-col size="4" text-center> {{ cafeCount.currentMonthApprovedCount }}</ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-item>
+
+
+  <ion-item lines="none"></ion-item>
+
+  <div>
+    <h1 align="center"><u>Dashboard FTD</u> </h1>
+    <p style="text-align: center;">{{fromdate}} <ion-text *ngIf="this.fromdate"> - </ion-text> {{todate}}</p>
+
+  </div>
+
+  
+
+
+
+  <ion-item lines="none">
+    <ion-grid>
+
+      <ion-row class="heading">
+        <ion-col style="text-align: center" class="bgcolor" size="3" text-center><b>Date</b></ion-col>
+        <ion-col style="text-align: center" class="bgcolor" size="3" text-center><b>Uploaded Count</b></ion-col>
+        <ion-col class="bgcolor" size="3" text-center><b>Rejected Count</b></ion-col>
+        <ion-col class="bgcolor" size="3" text-center><b>Approved Count</b></ion-col>
+      </ion-row>
+
+      <ion-row *ngFor="let item of daysArray">
+
+        <ion-col text-center> {{ this.getFormattedDate(item.cafAuditDatetime) }}</ion-col>
+        <ion-col text-center> {{ item.dailyUploadedCount }}</ion-col>
+        <ion-col text-center> {{ item.dailyRejectedCount }}</ion-col>
+        <ion-col text-center> {{ item.dailyApprovedCount }}</ion-col>
+
+      </ion-row>
+    </ion-grid>
+  </ion-item>
+
+
+
+
+  <ion-item lines="none"></ion-item>
+
+  <!-- <ion-grid>
+    <ion-row>
+      <ion-col style="border: solid 1px #fff !important" size="6">
+        <ion-button (click)="searchCafe()" color="danger"
+          style=" text-transform:none!important; font-size: medium; font-weight: normal; height: 2.5em; margin-right: 12px;"
+          type="submit" size="default">
+          <ion-icon slot="end" name="search" size="large"></ion-icon>Search CAF
+        </ion-button>
+      </ion-col>
+      
+    </ion-row>
+  </ion-grid>  -->
+
+  <ion-fab (click)="uploadCaf()" vertical="bottom" horizontal="end" style="margin: 5px;" slot="fixed">
+    <ion-fab-button>
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+
+  </ion-fab>
+</ion-content>
+<script>
+
+
+</script>

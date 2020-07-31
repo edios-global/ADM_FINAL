@@ -1,0 +1,102 @@
+<ion-header translucent>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>CAF Details</ion-title>
+
+    <ion-buttons slot="end">
+        <ion-button (click)="dashboard($event)">
+          <ion-icon name="ellipsis-vertical"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+
+    <ion-card>
+      <ion-item>
+        <ion-label><h4><b>CAF Type</b></h4></ion-label>
+
+        <ion-select required [(ngModel)]="caf.cafType" (ionChange)="selectCafType($event)" [placeholder]="placeholder">
+          <ion-select-option value="VOICE">VOICE</ion-select-option>
+          <ion-select-option value="M2M">M2M</ion-select-option>
+          <!-- <ion-select-option value="Sim Exchange">Sim Exchange</ion-select-option> -->
+        </ion-select>
+
+      </ion-item>
+    </ion-card>
+
+
+    <ion-text *ngIf="caf.cafNumber">CAF Number<span style="color: red">*</span></ion-text>
+    <ion-card>
+      <ion-item>
+        <ion-input required type="text"  [(ngModel)]="caf.cafNumber" name="CAF_Number" placeholder="CAF Number*">
+        </ion-input>
+      </ion-item>
+    </ion-card>
+
+    <ion-text *ngIf="caf.customerName ">Customer Name<span style="color: red">*</span></ion-text>
+    <ion-card>
+      <ion-item>
+        <ion-input required type="text" [(ngModel)]="caf.customerName" name="Customer_Name"
+          placeholder="Customer Name*"></ion-input>
+      </ion-item>
+    </ion-card>
+
+    <ion-text *ngIf="caf.mobileNumber ">Mobile Number<span style="color: red">*</span></ion-text>
+    <ion-card>
+      <ion-item>
+        <ion-input required inputmode="numeric" [maxlength]="this.maxlength" [(ngModel)]="caf.mobileNumber" name="Customer_Name"
+          placeholder="Mobile Number*"></ion-input>
+      </ion-item>
+    </ion-card>
+
+    <ion-text *ngIf="caf.fatherName">Father Name<span style="color: red">*</span></ion-text>
+    <ion-card>
+      <ion-item>
+        <ion-input required type="text" [(ngModel)]="caf.fatherName" name="Father name*" placeholder="Father Name*">
+        </ion-input>
+      </ion-item>
+    </ion-card>
+
+
+    <ion-text *ngIf="caf.companyName">Company Name</ion-text>
+    <ion-card>
+      <ion-item>
+        <ion-input type="text" [(ngModel)]="caf.companyName" name="Company_Name" placeholder="Company Name ">
+        </ion-input>
+      </ion-item>
+    </ion-card>
+
+
+    <ion-text *ngIf="caf.noOfConnections">Number of connections<span style="color: red">*</span></ion-text>
+    <ion-card>
+      <ion-item>
+        <ion-input required inputmode="numeric" maxlength="9" [(ngModel)]="caf.noOfConnections"  name="Number_of_Connections "
+          placeholder="Number of connections*">
+        </ion-input>
+      </ion-item>
+    </ion-card>
+
+   
+
+    <ion-text *ngIf="caf.notes">Notes</ion-text>
+    <ion-card>
+      <ion-item>
+        <ion-textarea [(ngModel)]="caf.notes" type="text" name="notes" placeholder="Notes"></ion-textarea>
+      </ion-item>
+    </ion-card>
+
+
+    <div class="ion-padding" align="center">
+      <ion-button  shape="round" size="medium" fill="outline"(click)="validateCafe()"  style="text-transform: none"
+        class="ion-no-margin">{{buttonName}}<ion-icon  [name]="iconname" slot="end"></ion-icon></ion-button>
+    </div>
+
+  </ion-list>
+
+</ion-content>

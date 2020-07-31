@@ -1,0 +1,128 @@
+<ion-header translucent>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Edit CAF Images</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="dashboard($event)">
+        <ion-icon name="ellipsis-vertical"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+
+  <h5 *ngIf="noImages" style="text-align: center;margin-top: 20px">No CAF Images Found !!</h5>
+
+  <!----------------------------------------------------------------CAF IMAGES -------------------------------------------------------------------------------->
+  <br>
+  <ion-text *ngIf="this.cafImages.length > 0">CAF Images</ion-text>
+  <ion-grid>
+    <ion-row>
+
+      <ion-col size="6" *ngFor="let item of cafImages; let id = index">
+        <ion-card class="block">
+          <ion-icon name="trash" class="deleteIcon" style="font-size: 20px !important"
+            (click)="removeDoucument(item,id,'CAF')">
+          </ion-icon>
+          <img [src]="item.cafFileUrl" *ngIf="item.cafFileUrl" style="height: 150px;" (click)="showImage(item)" />
+        </ion-card>
+      </ion-col>
+
+    </ion-row>
+
+    <div text-center align=" center">
+      <ion-button (click)="addCafImage('CAF')" shape="round" size="medium" fill="outline"
+        style="text-transform: none;margin: 5px">
+        <ion-icon name="add" slot="start"></ion-icon> Add CAF Image
+      </ion-button>
+    </div>
+
+  </ion-grid>
+
+
+
+
+  <!----------------------------------------------------------------POI IMAGES -------------------------------------------------------------------------------->
+
+  <ion-text *ngIf="this.poiImages.length  >0">POI Images</ion-text>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6" *ngFor="let item of poiImages; let id = index">
+        <ion-card class="block">
+          <ion-icon name="trash" class="deleteIcon" style="font-size: 20px !important"
+            (click)="removeDoucument(item,id,'POI')">
+          </ion-icon>
+          <img [src]="item.cafFileUrl" *ngIf="item.cafFileUrl" style="height: 150px;" (click)="showImage(item)" />
+        </ion-card>
+      </ion-col>
+
+    </ion-row>
+
+    <div text-center align="center">
+
+      <ion-button (click)="addCafImage('POI')" shape="round" size="medium" fill="outline"
+        style="text-transform: none;margin: 5px">
+        <ion-icon name="add" slot="start"></ion-icon> Add POI Image
+      </ion-button>
+    </div>
+  </ion-grid>
+
+
+
+  <!--------------------------------------------------------------POA IMAGES -------------------------------------------------------------------------------->
+
+
+  <ion-text *ngIf="this.poaImages.length  >0">POA Images</ion-text>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6" *ngFor="let item of poaImages; let id = index">
+        <ion-card class="block">
+          <ion-icon name="trash" class="deleteIcon" style="font-size: 20px !important"
+            (click)="removeDoucument(item,id,'POA')">
+          </ion-icon>
+          <img [src]="item.cafFileUrl" *ngIf="item.cafFileUrl" style="height: 150px;" (click)="showImage(item)" />
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+    <div text-center align="center">
+      <ion-button (click)="addCafImage('POA')" shape="round" size="medium" fill="outline"
+        style="text-transform: none;margin: 5px">
+        <ion-icon name="add" slot="start"></ion-icon> Add POA Image
+      </ion-button>
+    </div>
+
+  </ion-grid>
+
+
+  <!-- ----------------------------------------------------------PO IMAGES -------------------------------------------------------------------------------->
+
+  <ion-text *ngIf="this.poImages.length  >0">PO Images</ion-text>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6" *ngFor="let item of poImages; let id = index">
+        <ion-card class="block">
+          <ion-icon name="trash" class="deleteIcon" style="font-size: 20px !important"
+            (click)="removeDoucument(item,id,'PO')">
+          </ion-icon>
+          <img [src]="item.cafFileUrl" *ngIf="item.cafFileUrl" style="height: 150px;" (click)="showImage(item)" />
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+    <div text-center align="center">
+      <ion-button (click)="addCafImage('PO')" shape="round" size="medium" fill="outline"
+        style="text-transform: none;margin: 5px">
+        <ion-icon name="add" slot="start"></ion-icon> Add PO Image
+      </ion-button>
+    </div>
+
+  </ion-grid>
+
+</ion-content>

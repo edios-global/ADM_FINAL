@@ -1,0 +1,63 @@
+// #editCard{
+//     padding: 1px;
+//     height: 150px;
+//     border-top: 1px solid #ff4364;
+// }
+// img{
+//     width: 50%;
+  
+//     height: 200px;
+//    margin-left: 8px;
+//    margin-top: 5px;
+// }
+// ion-button{
+// position: absolute;
+// right:    0;
+// bottom:   0;
+// }
+
+img{
+  widows: 100%;
+  height: 100%;
+}
+
+.bottom {
+    padding: 5px;
+    position: fixed;
+    bottom:0;
+    left: 0;
+    right: 0;
+  }
+ .trash-ico{
+  position: absolute;
+  top: 20px;
+  color: #ffffff;
+  right: 25px;
+  font-size: 25px;
+  background-color : var(--ion-color-primary);
+ 
+  border-radius: 50px;
+  border: 1px solid var(--ion-color-primary);
+  padding: 10px;
+ }
+ ion-text{
+   margin: 5px;
+   padding: 5px;
+   font-weight: bold;
+ }
+
+ .block {
+  position: relative;
+  .deleteIcon {
+    position: absolute !important;
+    color: #ffffff !important;
+    margin-left: 85% !important;
+    margin-top: 5%
+    
+  }
+  .deleteIcon:before {
+    font-size: 40px !important;
+    margin-top: 5%
+    
+  }
+  }

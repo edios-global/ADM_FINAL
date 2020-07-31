@@ -1,0 +1,226 @@
+ion-menu-button {
+    color: var(--ion-color-primary);
+  }
+  
+  #container {
+    text-align: center;
+  
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  #container strong {
+    font-size: 20px;
+    line-height: 26px;
+  }
+  
+  #container p {
+    font-size: 16px;
+    line-height: 22px;
+    color: #8c8c8c;
+    margin: 0;
+  }
+  
+  #container a {
+    text-decoration: none;
+  }
+  
+  .horizontal-cards {
+    ion-card {
+      border-radius: 5px;
+    }
+  }
+  
+  .box1 {
+    border-width: 1px;
+    border-color: #e1e1e1;
+    border-style: solid;
+    border-radius: 5px;
+    background: #56ab2f;
+    background: linear-gradient(172deg, #56ab2f 0%, #a8e063 100%);
+  
+    float: left;
+    width: 100%;
+    height: 165px;
+    display: block;
+    margin: 5px;
+    z-index: 5;
+  }
+  
+  .box2 {
+    border-width: 1px;
+    border-color: #e1e1e1;
+    border-style: solid;
+    border-radius: 5px;
+    background: rgb(93, 100, 227);
+    background: linear-gradient(172deg, rgba(93, 100, 227, 1) 0%, rgba(143, 148, 251, 1) 100%);
+  
+    float: left;
+    width: 100%;
+    height: 165px;
+    display: block;
+    margin: 5px;
+    z-index: 6;
+  }
+  
+  .box3 {
+    border-width: 1px;
+    border-color: #e1e1e1;
+    border-style: solid;
+    border-radius: 5px;
+    background: rgb(247, 100, 11);
+    background: linear-gradient(172deg, rgba(247, 100, 11, 1) 0%, rgba(247, 183, 51, 1) 100%);
+  
+    float: left;
+    width: 100%;
+  
+    height: 165px;
+    display: block;
+    margin: 5px;
+    z-index: 7;
+  }
+  
+  .box4 {
+    border-width: 1px;
+    border-color: #e1e1e1;
+    border-style: solid;
+    border-radius: 5px;
+    background: rgba(246, 185, 1, 1);
+    background: linear-gradient(172deg, rgba(246, 185, 1, 1) 0%, rgba(249, 217, 66, 1) 100%);
+  
+    float: left;
+    width: 100%;
+  
+    height: 165px;
+    display: block;
+    margin: 5px;
+    z-index: 8;
+  
+  }
+  
+  .box5 {
+    border-width: 1px;
+    border-color: #e1e1e1;
+    border-style: solid;
+    border-radius: 5px;
+    background: rgb(229, 12, 145);
+    background: linear-gradient(172deg, rgba(229, 12, 145, 1) 0%, rgba(246, 106, 192, 1) 100%);
+  
+    float: left;
+    width: 100%;
+  
+    height: 165px;
+    display: block;
+    margin: 5px;
+    z-index: 9;
+  }
+  
+  .Ellipse1 {
+    border-width: 6.92px;
+    border-color: white;
+    border-style: solid;
+    border-radius: 50%;
+    // right: 20px;
+    top: 75px;
+    width: 70.16px;
+    height: 70.16px;
+    z-index: 17;
+    position: absolute;
+    text-align: center;
+    left: 50%;
+      transform: translateX(-50%);
+  }
+  
+  ion-card-title {
+    font-size: 12px;
+    font-weight: bold;
+  }
+  
+  .Ellipse1 ion-card-content {
+    padding: 5px;
+    font-size: 10px;
+    font-weight: bold;
+  }
+  
+  .main-button {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    display: block !important;
+    color: #e12e2e;
+    // padding: 10px;
+    // font-size: 0.75em;
+    
+    //color: var(--ion-color-base);
+    //color: var(--ion-color-custom-primary);
+  }
+  
+  .masters {
+    background-color: grey;
+  }
+
+  ion-card-title{
+    color: black;
+    text-align: center;
+  }
+  .cardContent{
+   
+    text-align: center;
+  }
+  ion-label{
+    color: black;
+    font-weight: bold
+  }
+
+  .col {
+    border: solid 1px grey;
+    border-bottom-style: none;
+    border-right-style: none;
+}
+
+.col:last-child {
+    border-right: solid 1px grey;
+}
+
+.row:last-child .col {
+    border-bottom: solid 1px grey;
+}
+
+mtd_row{
+  border: solid  .5px black;
+}
+
+.bgcolor {
+  background: #4d71d7;
+  color: #fff;
+}
+
+ion-col {
+  border: .5px solid #aeb7ca;
+  text-align: center;
+}
+
+div{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+// .heading{
+// border-radius: 50px;
+// border: 1px solid #4d71d7;
+// }
+
+.loading{
+  z-index: 5;
+    
+  position: absolute;
+  top:0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+    
+  margin: auto;
+}

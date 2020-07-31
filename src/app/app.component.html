@@ -1,0 +1,44 @@
+<ion-app>
+  <ion-menu side="start" menuId="home_side_menu" contentId="home_menu">
+    <ion-content>
+      <div class="menu-header-bg"></div>
+      <div class="header-content">
+        <img src="../assets/images/avtar.png">
+        <br>
+        <p >{{distributorName}}</p>
+      </div>
+
+      <ion-list class="menu-items" lines="none">
+
+        <ion-menu-toggle>
+          <ion-item [class]="dashboardClass" (click)="dashboard()">
+            <ion-icon name="bar-chart-outline"></ion-icon>Dashboard
+          </ion-item>
+        </ion-menu-toggle>
+
+
+        <ion-menu-toggle>
+          <ion-item [class]="contactClass" (click)="contact()">
+
+            <ion-icon  name="call-outline" ></ion-icon>Contact Us
+          </ion-item>
+
+        </ion-menu-toggle>
+
+       
+        <ion-menu-toggle>
+
+          <ion-item (click)="signOut()">
+
+            <ion-icon name="log-out-outline"></ion-icon>Sign Out
+          </ion-item>
+        </ion-menu-toggle>
+
+
+
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <ion-router-outlet id="home_menu"></ion-router-outlet>
+</ion-app>

@@ -1,0 +1,7 @@
+{
+  "name": "Aerial Document Management (ADM)",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}

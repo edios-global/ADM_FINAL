@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title style="color: blue !important">Updated CAF Details</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">
+        <ion-icon slot="icon-only" style="color: blue" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+
+
+  <ion-card class="main-card ion-no-padding" *ngIf="searchItems.length > 0">
+    <ion-card-content>
+
+      <ion-card id="searchCard" *ngFor="let item of searchItems;let i = index"
+        style="color: black; background-color: white;  align-items: center; text-align: center;">
+
+        <ion-label>
+          <p style="font-weight: normal; font-size: 1em;color: black"><b> Customer Name : </b>
+            <span>{{item.customerName}}</span></p>
+          <p style="font-weight: normal; font-size: 1em; color: black"> <b>CAF Number : </b>
+            <span>{{item.cafNumber}}</span></p>
+          <p *ngIf="item.cafStatus.startsWith('R')" style="font-weight: normal; font-size: 1em;color: black"> <b>CAF
+              Status : </b> <span style="color: red;font-weight: bold">{{item.cafStatus}}</span></p>
+          <p *ngIf="item.cafStatus.startsWith('A')" style="font-weight: normal; font-size: 1em;color: black"> <b>CAF
+              Status : </b> <span style="color: green;font-weight: bold">{{item.cafStatus}}</span></p>
+
+          <p style="font-weight: normal; font-size: 1em;color: black"> <b>Uploaded Date : </b>
+            <span>{{item.uploadedDate}}
+            </span></p>
+          <p style="font-weight: normal; font-size: 1em;color: black"> <b>Approved Date : </b>
+            <span>{{item.cafApprovedDatetime}}</span></p>
+
+        </ion-label>
+
+      </ion-card>
+
+
+
+
+    </ion-card-content>
+  </ion-card>
+
+
+</ion-content>
