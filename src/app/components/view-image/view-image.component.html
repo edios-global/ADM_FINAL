@@ -11,7 +11,7 @@
 <ion-content>
 <!-- <ion-slides [options]="slide" zoom>
     <ion-slide>   -->
-        <img [src]="url"/>
+        <img [src]="DomSanitizer.bypassSecurityTrustUrl(url)"/>
      <!-- </ion-slide>
   </ion-slides> -->
   

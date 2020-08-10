@@ -207,16 +207,22 @@ export class DashboardPage implements OnInit {
             var result: CafDetailsResponse[];
 
             result = response.Result_Output;
-              console.log("Dashboard details" , JSON.stringify(result))
-            if (result.length != 0) {
+            if (result[0]) {
 
+              console.log("Dashboard details", JSON.stringify(response))
 
               if (result.length == 1) {
+
+                console.log("Dashboard single Result"+result.length)
+                this.daysArray=[];
                 this.cafeCount.uploadedCount = result[0].uploadedCount;
                 this.cafeCount.rejectedCount = result[0].rejectedCount;
                 this.cafeCount.currentMonthApprovedCount = result[0].currentMonthApprovedCount;
+                this.daysArray.push(result[0])
               }
               else {
+                console.log("Dashboard multiple  Result"+result.length)
+
                 //results greater than 1
 
                 this.cafeCount.uploadedCount = result[0].uploadedCount;
@@ -274,59 +280,43 @@ export class DashboardPage implements OnInit {
 
                       }
                     }
-                    else{
-                        res1.cafAuditDatetime = result[i].cafUploadedDatetime;
-                        res1.dailyApprovedCount = 0;
-                        res1.dailyRejectedCount = 0;
-                        res1.dailyUploadedCount = result[i].dailyUploadedCount;
-                        this.daysArray.push(res1);
+                    else {
+                      res1.cafAuditDatetime = result[i].cafUploadedDatetime;
+                      res1.dailyApprovedCount = 0;
+                      res1.dailyRejectedCount = 0;
+                      res1.dailyUploadedCount = result[i].dailyUploadedCount;
+                      this.daysArray.push(res1);
                     }
 
                   }
 
-
-
-                  // if (this.daysArray[1].cafAuditDatetime) {
-
-                  //   this.fromdate = this.getFormattedDate(this.daysArray[1].cafAuditDatetime);
-                  //   this.todate = this.getFormattedDate(this.daysArray[this.daysArray.length - 1].cafAuditDatetime);
-                  // }
-
-
-
-
                 }
               }
-
-                if (this.daysArray[0].cafAuditDatetime) {
-                  this.fromdate = this.getFormattedDate(this.daysArray[0].cafAuditDatetime);
-
-                }
-                else if (this.daysArray[0].cafUploadedDatetime) {
-                  this.fromdate = this.getFormattedDate(this.daysArray[0].cafUploadedDatetime);
-
-                }
-
-
-                if (this.daysArray[this.daysArray.length - 1].cafAuditDatetime) {
-                  this.todate = this.getFormattedDate(this.daysArray[this.daysArray.length - 1].cafAuditDatetime);
-
-                }
-                else if (this.daysArray[this.daysArray.length - 1].cafUploadedDatetime) {
-                  this.todate = this.getFormattedDate(this.daysArray[this.daysArray.length - 1].cafUploadedDatetime);
-
-                }
-
-
-                this.daysArray.reverse();
+              if (this.daysArray[0].cafAuditDatetime) {
+                this.fromdate = this.getFormattedDate(this.daysArray[0].cafAuditDatetime);
 
               }
-            })
+              else if (this.daysArray[0].cafUploadedDatetime) {
+                this.fromdate = this.getFormattedDate(this.daysArray[0].cafUploadedDatetime);
+
+              }
+
+
+              if (this.daysArray[this.daysArray.length - 1].cafAuditDatetime) {
+                this.todate = this.getFormattedDate(this.daysArray[this.daysArray.length - 1].cafAuditDatetime);
+
+              }
+              else if (this.daysArray[this.daysArray.length - 1].cafUploadedDatetime) {
+                this.todate = this.getFormattedDate(this.daysArray[this.daysArray.length - 1].cafUploadedDatetime);
+
+              }
+
+              this.daysArray.reverse();
+            }
+          })
       })
       .catch((err) => {
         this.helperclass.dismissLoading();
-        this.helperclass.dismissLoading();
-
         console.error("Dashboard   Error  is " + JSON.stringify(err));
       })
   }
@@ -348,22 +338,19 @@ export class DashboardPage implements OnInit {
       var abc = arr[1] + " " + arr[0] + " " + arr[2];
       return abc.replace(',', '');
     }
-
   }
   filterArray() {
 
     this.searchItems = []
-
     var date = new Date(this.savedDate);
-    // var d =   date.toString().replace('GMT+0530 (India Standard Time)','');
-
-
-
+    
     this.cafeItems.forEach(element => {
       if (element.cafApprovedDatetime) {
 
         var dateString = element.cafApprovedDatetime.replace(',', '').replace('AM', '').replace('PM', '');
+        // dateString.split
         var fetchedDate = new Date(dateString);
+
         fetchedDate.setHours(fetchedDate.getHours() + 12);
         if (fetchedDate > date) {
           if (element.cafStatus != 'Uploaded')

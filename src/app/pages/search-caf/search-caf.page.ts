@@ -4,7 +4,6 @@ import { LocalStorageService } from 'src/app/services/storage/localStorage';
 import { Router, NavigationExtras } from '@angular/router';
 import { HelperClass } from 'src/app/utils/HelperClasses';
 import { ApiService } from 'src/app/services/api/api';
-import { CafeCountRequest } from 'src/app/modals/payload';
 import { AppConstants } from 'src/app/utils/AppConstants';
 import { GeneralResponse, CafSearchResponse, DistributorDetails } from 'src/app/modals/modal';
 
@@ -144,6 +143,7 @@ export class SearchCafPage implements OnInit {
   }
   filterArray() {
     var abc = moment(this.dateFromPicker).format('MMM-DD-YYYY').split("-");
+   
     var selectedDate = abc[1] + " " + abc[0] + " " + abc[2];
     console.log("SEARCH" + selectedDate);
     this.searchItems = [];
@@ -169,7 +169,11 @@ export class SearchCafPage implements OnInit {
     }
     else {
       var arr = date.split(" ");
+      if(parseInt(arr[1]) <10){
+        arr[1] = "0"+arr[1];
+      }
       var abc = arr[1] + " " + arr[0] + " " + arr[2];
+      console.log("Search"+abc)
       return abc.replace(',', '');
 
     }

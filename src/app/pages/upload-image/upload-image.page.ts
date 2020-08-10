@@ -8,6 +8,7 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { Router, NavigationExtras } from '@angular/router';
 import { AppConstants } from 'src/app/utils/AppConstants';
 import { PopoverController, ActionSheetController, AlertController, ModalController } from '@ionic/angular';
+import { DomSanitizer } from '@angular/platform-browser';
 
 import { DashboardComponent } from 'src/app/components/dashboard/dashboard.component';
 import { cafIdResponse, UploadCafImageData, GeneralResponse } from 'src/app/modals/modal';
@@ -46,6 +47,7 @@ export class UploadImagePage {
     private helperclass: HelperClass,
     private fileTransfer: FileTransfer,
     private crop: Crop,
+    private DomSanitizer: DomSanitizer,
     private photoviewer: PhotoViewer,
     private webview: WebView,
     private router: Router,
@@ -409,9 +411,11 @@ export class UploadImagePage {
               this.cafType = "PO"
               this.times = 3;
             }
-            else {
+            else if(this.times == 3) {
+              
               this.cafPayload.cafStatus = "Uploaded"
-
+              this.cafPayload.cafId =this.cafId.cafId.toString();
+              console.log("UPLOAD IMAGE change status"+JSON.stringify(this.cafPayload))
               this.api.editCafData(this.cafPayload)
                 .then((result) => {
                   this.helperclass.dismissLoading()
@@ -419,7 +423,7 @@ export class UploadImagePage {
 
                       let response = new GeneralResponse();
                       response = JSON.parse(result.data);
-                      console.log("IMAGES CAF UPLOAD RESPONSE " + JSON.stringify(result));
+                      console.log("UPLOAD IMAGE change status UPLOAD RESPONSE " + JSON.stringify(result));
 
                       if (response.Result_Status.startsWith("S")) {
 
