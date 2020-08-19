@@ -24,6 +24,7 @@ export class EditImagesPage implements OnInit {
   poImages: cafImages[] = [];
   cafDataIntent = new CafePayload();
   cafId: string;
+  deleteNotes ="";
   images: cafImages[] = [];
   noImages = false;
   editImagePage  = "EditImagesPage";
@@ -206,75 +207,162 @@ export class EditImagesPage implements OnInit {
   }
 
 
-
+  async showConfirmationOfDeleteImage(image: cafImages, i: number, type: string){
+  const alert = await this.alertController.create({
+  mode:'ios',
+  animated:true,
+  message:'Enter reason for removing the image',
+  subHeader:"Remove  Image",
+    inputs: [
+      {
+        name: 'name1',
+        type: 'textarea',
+      
+        cssClass:'reasoninput'
+        // placeholder: 'Please enter the reason to remove this image'
+      }],    
+     buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            cssClass: 'secondary',
+            handler: () => {
+              console.log('Confirm Cancel');
+            }
+          }, {
+            text: 'Ok',
+            handler: (alertData) => { //takes the data 
+              console.log(alertData.name1);
+              if(!alertData.name1){
+                this.helperclass.showMessage("Please enter reason for removing image")
+              
+              }
+              else{
+                this.deleteNotes = alertData.name1;
+                this.removeDocument(image,i,type);
+              }
+          }
+          }
+        ]
+});
+await alert.present();
+}
   removeDoucument(image: cafImages, i: number, type: string) {
 
     if (!this.hc.isConnected()) {
       this.hc.showMessage(AppConstants.NoInternetConnectionErrMsg);
       return;
     }
-
-    if (window.confirm("Are you sure you want to remove ?")) {
-
-      var removePayload = new RemoveDocument();
-      removePayload.cafId = this.cafId;
-      removePayload.fileName = image.fileName;
-      removePayload.signatureKey = AppConstants.signatureKey;
-      this.hc.showLoading("Removing..")
-      this.apiservice.removeDocumnet(removePayload)
-
-        .then(res => {
-
-          this.hc.dismissLoading();
-
-          let response = new GeneralResponse();
-
-          response = JSON.parse(res.data);
-
-          console.log("EDIT IMAGES RESPONSE    " + JSON.stringify(response));
-
-          if (response.Result_Status.startsWith("S")) {
-
-            this.hc.showMessage("Image Removed Successfully");
-
-            const index = this.images.indexOf(image);
-
-            if (index > -1) {
-              this.images.splice(index, 1);
-              if (this.images.length == 0) {
-                this.noImages = true;
-              }
-
-            }
-            if (type == "CAF") {
-              this.cafImages.splice(i, 1);
-            }
-
-            else if (type == "POI") {
-              this.poiImages.splice(i, 1);
-            }
-
-            else if (type == "POA") {
-              this.poaImages.splice(i, 1);
-            }
-
-            else if (type == "PO") {
-              this.poImages.splice(i, 1);
-            }
-
-
-          }
-
-
-        })
-        .catch(err => {
-          console.log("EDIT IMAGES RESPONSE ERROR   " + JSON.stringify(err));
-
-        })
-
-
+    this.showConfirmationOfDeleteImage(image,i,type);
 
     }
+   
+      removeDocument(image: cafImages, i: number, type: string){
+        // if (window.confirm("Are you sure you want to remove ?")) {
+
+          var removePayload = new RemoveDocument();
+          removePayload.cafId = this.cafId;
+          removePayload.fileName = image.fileName;
+          removePayload.signatureKey = AppConstants.signatureKey;
+          removePayload.deleteNotes = this.deleteNotes;
+          this.hc.showLoading("Removing..")
+          this.apiservice.removeDocumnet(removePayload)
+    
+            .then(res => {
+    
+              this.hc.dismissLoading();
+    
+              let response = new GeneralResponse();
+    
+              response = JSON.parse(res.data);
+    
+              console.log("EDIT IMAGES RESPONSE    " + JSON.stringify(response));
+    
+              if (response.Result_Status.startsWith("S")) {
+    
+                this.hc.showMessage("Image Removed Successfully");
+    
+                const index = this.images.indexOf(image);
+    
+                if (index > -1) {
+                  this.images.splice(index, 1);
+                  if (this.images.length == 0) {
+                    this.noImages = true;
+                  }
+    
+                }
+                if (type == "CAF") {
+                  this.cafImages.splice(i, 1);
+                  if(this.cafImages.length ==0){
+                    this.updateCafStatus();
+                  }
+                }
+    
+                else if (type == "POI") {
+                  this.poiImages.splice(i, 1);
+                  if(this.poiImages.length ==0){
+                    this.updateCafStatus();
+                  }
+                }
+    
+                else if (type == "POA") {
+                  this.poaImages.splice(i, 1);
+                  if(this.poaImages.length ==0){
+                    this.updateCafStatus();
+                  }
+                  
+                }
+    
+                else if (type == "PO") {
+                  this.poImages.splice(i, 1);
+                  if(this.poImages.length ==0){
+                    this.updateCafStatus();
+                  }
+                }
+              }
+    
+    
+            })
+            .catch(err => {
+              console.log("EDIT IMAGES RESPONSE ERROR   " + JSON.stringify(err));
+    
+            })
+    
+    
+    
+        // }
+    
+      }
+  updateCafStatus(){
+    this.helperclass.showLoading("Updating Caf Status..")
+    this.cafDataIntent.cafStatus ='Pending';
+    this.cafDataIntent.cafId =this.cafId;
+    console.log("UPLOAD IMAGE change status"+JSON.stringify(this.cafDataIntent))
+    this.apiservice.editCafData(this.cafDataIntent)
+      .then((result) => {
+        this.helperclass.dismissLoading()
+          .then(() => {
+
+            let response = new GeneralResponse();
+            response = JSON.parse(result.data);
+            console.log("UPLOAD IMAGE change status UPLOAD RESPONSE " + JSON.stringify(result));
+
+            if (response.Result_Status.startsWith("S")) {
+              this.helperclass.showMessage("CAF Status has been changed to Pending");
+            }
+            else {
+              this.helperclass.showMessage(response.Result_Message);
+            }
+
+          })
+      })
+      .catch(err => {
+        this.helperclass.dismissLoading();
+        this.helperclass.showMessage(AppConstants.apiErrorMessage)
+
+        console.error("Uplaod caf Error  is " + JSON.stringify(err));
+
+      })
   }
 
   async dashboard(ev: any) {

@@ -40,5 +40,6 @@ export class RemoveDocument{
     signatureKey: string
     cafId: string
     fileName:string
+    deleteNotes:string
 
 }

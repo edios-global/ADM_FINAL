@@ -110,7 +110,7 @@ export class UploadCafPage implements OnInit {
       this.helperclass.showMessage("Please enter customer name");
       return;
     }
-    var expr2 = /^[a-z ]*$/;
+    var expr2 = /^[a-zA-Z ]*$/;
     if (!expr2.test(this.caf.customerName)) {
       this.helperclass.showMessage("Only Alphabets are allowed in Customer name");
       return;
@@ -165,7 +165,7 @@ export class UploadCafPage implements OnInit {
       return;
     }
 
-    var expr5 = /^[a-z ]*$/;
+    var expr5 = /^[a-zA-z ]*$/;
     if (!expr5.test(this.caf.fatherName)) {
       this.helperclass.showMessage("Only Alphabets are allowed in Father name");
       return;

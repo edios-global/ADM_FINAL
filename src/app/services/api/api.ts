@@ -25,7 +25,7 @@ export class ApiService {
 
   login(payload: LoginRequest) {
     let apiUrl = this.baseUrl.concat("authenticateUser");
-    this.http.setDataSerializer('json');
+    this.http.setDataSerializer('json');  
     return this.http.post(apiUrl, payload, {});
   }
 
