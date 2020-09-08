@@ -10,14 +10,18 @@ ion-button{
 ion-icon {
     font-size: 5em;
 }
-
 #searchCard{
     margin-left: 2px;
     margin-bottom: 3px;
     margin-right: 2px;
-    padding: 3px;
-    height: 130px;
+    padding: 4px;
+    height: 50%;
+    display: flex; align-items: center; justify-content: center;
   
+    ion-label {
+        width: 100%;  padding: 10px;
+    }
+
 }
 
 ion-text{
@@ -25,9 +29,9 @@ ion-text{
     margin: 5px;
     color : var(--ion-color-primary);
 }
-span{
-    float: right;
-}
+// span{
+//     float: right;
+// }
 p{
     text-align: left;
 }

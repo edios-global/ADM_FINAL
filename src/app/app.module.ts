@@ -29,6 +29,7 @@ import { Broadcaster } from '@ionic-native/broadcaster/ngx';
 
 import { NgxIonicImageViewerModule } from 'ngx-ionic-image-viewer';
 
+import { AppVersion } from '@ionic-native/app-version/ngx';
 
 
 
@@ -58,6 +59,7 @@ import { Network } from '@ionic-native/network/ngx';
     Base64,
     Broadcaster,
     Crop,
+    AppVersion,
     WebView,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],

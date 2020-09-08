@@ -41,15 +41,10 @@ export class LocalStorageService {
   /**
    * storeDateAndTime FUNCTION TO STORE LAST DATE AND TIME
    */
-  public storeDateAndTime(dateAndTime: string) {
-    this.nativeStorage.setItem(AppConstants.dateAndTime, dateAndTime)
+  public storeDateAndTime(dateAndTime: string):any {
+    return this.nativeStorage.setItem(AppConstants.dateAndTime, dateAndTime)
 
-      .then(() => {
-        console.log("LocalStorage : Date And time saved successfully");
-      })
-      .catch((error) => {
-        console.error("LocalStorage :Error in saving Date And time " + JSON.stringify(error))
-      })
+
   }
 
   /**
@@ -63,7 +58,7 @@ export class LocalStorageService {
   }
 
   clear(key: string) {
-    this.nativeStorage.remove(key);
+    this.nativeStorage.clear();
   }
 
 

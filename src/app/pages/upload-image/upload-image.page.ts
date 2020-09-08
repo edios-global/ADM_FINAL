@@ -36,6 +36,7 @@ export class UploadImagePage {
   times = 0;
   cafPayload: CafePayload = new CafePayload();
   cafType = "CAF";
+  buttonName = "CAF";
   editImage = false;
   changeStatusOfCaf = false;
   cafDataIntent = new CafePayload();
@@ -75,15 +76,24 @@ export class UploadImagePage {
 
       if (this.router.getCurrentNavigation().extras.state.imageType) {
         this.cafType = this.router.getCurrentNavigation().extras.state.imageType;
+        if(this.cafType == "AS"){
+          this.buttonName ="Authorized Signatory"
 
+        }
+        else if(this.cafType == "DF"){
+          this.buttonName ="Declaration Form"
+
+        }
+        else{
+          this.buttonName = this.router.getCurrentNavigation().extras.state.imageType;
+
+        }
       }
 
       if (this.router.getCurrentNavigation().extras.state.cafidR) {
         this.cafId = this.router.getCurrentNavigation().extras.state.cafidR;
 
       }
-
-
 
       if (this.router.getCurrentNavigation().extras.state.editImage) {
         this.editImage = this.router.getCurrentNavigation().extras.state.editImage;
@@ -316,7 +326,7 @@ export class UploadImagePage {
       Promise.all(this.getUploadImagesPromises())
         .then(result => {
           this.helperclass.dismissLoading();
-          this.helperclass.showMessage("CAF Images Uploaded successfully For  " + this.cafType)
+          this.helperclass.showMessage("CAF Images Uploaded successfully For  " + this.buttonName)
           this.showImages = [];
           this.cameraImages = [];
           this.docType = [];
@@ -327,6 +337,55 @@ export class UploadImagePage {
             if (this.changeStatusOfCaf) {
               this.helperclass.showLoading("Updating Caf Status...")
               this.cafDataIntent.cafStatus = 'Uploaded';
+              this.api.editCafData(this.cafDataIntent)
+                .then((result) => {
+                  this.helperclass.dismissLoading()
+                    .then(() => {
+                      
+                      let response = new GeneralResponse();
+                      response = JSON.parse(result.data);
+                      console.log(this.uploadImagePage, "Status Uploaded Response" + JSON.stringify(result));
+
+                      if (response.Result_Status.startsWith("S")) {
+
+                        let cafId = new cafIdResponse()
+                        cafId = response.Result_Output;
+                        this.cafId = cafId;
+                        // this.helperclass.showMessage(message);
+
+                        setTimeout(() => {
+                          let navigationExtras: NavigationExtras = {
+                            state: {
+                              CAFID: this.cafId.cafId.toString()
+                            }
+                          };
+
+                          this.router.navigate(['edit-images'], navigationExtras);
+                        }, 500)
+
+                      }
+                      else {
+                        this.helperclass.showMessage(response.Result_Message);
+                        console.log("IMAGES CAF UPLOAD RESPONSE " + response.Result_Message);
+                      }
+
+                    })
+                })
+                .catch(err => {
+                  this.helperclass.dismissLoading();
+                  this.helperclass.showMessage(AppConstants.apiErrorMessage)
+
+                  console.error("Uplaod caf Error  is " + JSON.stringify(err));
+
+                })
+
+
+
+            }
+            else if(!this.changeStatusOfCaf){
+
+              this.helperclass.showLoading("Updating Caf Status...")
+              this.cafDataIntent.cafStatus = 'Pending';
               this.api.editCafData(this.cafDataIntent)
                 .then((result) => {
                   this.helperclass.dismissLoading()
@@ -369,8 +428,6 @@ export class UploadImagePage {
 
                 })
 
-
-
             }
             else {
               setTimeout(() => {
@@ -388,11 +445,14 @@ export class UploadImagePage {
 
           else {
 
+            console.log("UPLOAD IMAGE times"+this.times);
+
             if (this.times == 0) {
 
               //CAF TYPE CAF
 
               this.cafType = "POI"
+              this.buttonName = "POI"
               this.times = 1;
 
             }
@@ -400,26 +460,60 @@ export class UploadImagePage {
 
             else if (this.times == 1) {
 
-              //CAF TYPE CAF
+             
               this.cafType = "POA"
+              this.buttonName = "POA"
               this.times = 2;
             }
 
             else if (this.times == 2) {
-
-              //CAF TYPE CAF
-              this.cafType = "PO"
-              this.times = 3;
+              // if(this.cafPayload.cafType.startsWith("V")){
+                this.cafType ="AS"
+                this.buttonName ="Authorized Signatory"
+                this.times = 3;
+              //}
+           
+              // this.cafType = "PO"
+              // this.buttonName = "PO"
+              // this.times = 3;
+             
             }
-            else if(this.times == 3) {
+            else if (this.times == 3) {
+
+           
+              //if(this.cafPayload.cafType.startsWith("V")){
+                this.cafType ="Po"
+                this.buttonName ="PO"
+                if(this.cafPayload.cafType.startsWith("V")){
+                  this.times = 4;
+                }
+                if(this.cafPayload.cafType.startsWith("M")){
+                  this.times = 5;
+                }
+                
+             
+              //
+             
+            
+             
+            }
+            else if(this.times == 5){
+              this.cafType ="DF"
+              this.buttonName ="Declaration Form"
+              this.times =6;
+              
+            }
+
+            
+            else if(this.times == 4 || this.times ==6) {
               
               this.cafPayload.cafStatus = "Uploaded"
               this.cafPayload.cafId =this.cafId.cafId.toString();
               console.log("UPLOAD IMAGE change status"+JSON.stringify(this.cafPayload))
               this.api.editCafData(this.cafPayload)
                 .then((result) => {
-                  this.helperclass.dismissLoading()
-                    .then(() => {
+                  // this.helperclass.dismissLoading()
+                  //   .then(() => {
 
                       let response = new GeneralResponse();
                       response = JSON.parse(result.data);
@@ -443,14 +537,14 @@ export class UploadImagePage {
                       }
 
                     })
-                })
-                .catch(err => {
-                  this.helperclass.dismissLoading();
-                  this.helperclass.showMessage(AppConstants.apiErrorMessage)
+                // })
+                // .catch(err => {
+                //   this.helperclass.dismissLoading();
+                //   this.helperclass.showMessage(AppConstants.apiErrorMessage)
 
-                  console.error("Uplaod caf Error  is " + JSON.stringify(err));
+                //   console.error("Uplaod caf Error  is " + JSON.stringify(err));
 
-                })
+                // })
 
 
             }

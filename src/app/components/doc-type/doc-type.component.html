@@ -24,9 +24,12 @@
             <span>{{item.cafNumber}}</span></p>
           <p *ngIf="item.cafStatus.startsWith('R')" style="font-weight: normal; font-size: 1em;color: black"> <b>CAF
               Status : </b> <span style="color: red;font-weight: bold">{{item.cafStatus}}</span></p>
+          <p *ngIf="item.cafStatus.startsWith('R') && item.cafAuditNotes"
+            style="font-weight: normal; font-size: 1em; color: black;"> <b>Reason : </b>
+            <span >{{item.cafAuditNotes}}</span></p>
           <p *ngIf="item.cafStatus.startsWith('A')" style="font-weight: normal; font-size: 1em;color: black"> <b>CAF
               Status : </b> <span style="color: green;font-weight: bold">{{item.cafStatus}}</span></p>
-
+              <p *ngIf="item.cafStatus.startsWith('P') " style="font-weight: normal; font-size: 1em;color: black"> <b>CAF Status : </b> <span style="color: red;font-weight: bold" >{{item.cafStatus}}</span></p>
           <p style="font-weight: normal; font-size: 1em;color: black"> <b>Uploaded Date : </b>
             <span>{{item.uploadedDate}}
             </span></p>

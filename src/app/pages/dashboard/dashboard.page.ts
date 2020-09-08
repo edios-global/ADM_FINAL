@@ -1,4 +1,4 @@
-import { DistributorDetails, SevenDaysResponse, DateAndTime, CafSearchResponse } from './../../modals/modal';
+import { DistributorDetails, SevenDaysResponse, DateAndTime, CafSearchResponse, LoginResponse } from './../../modals/modal';
 import { AppConstants } from 'src/app/utils/AppConstants';
 import { CafeCountRequest, SearchCafeRequest } from './../../modals/payload';
 import { HelperClass } from './../../utils/HelperClasses';
@@ -21,20 +21,19 @@ import { DocTypeComponent } from 'src/app/components/doc-type/doc-type.component
 export class DashboardPage implements OnInit {
   //VARIBALE NAMES : 
 
+  fromdate = "";
   distributorId: number;
   daysArray: CafDetailsResponse[] = [];
-  fromdate = "";
-
   cafeItems: CafSearchResponse[] = [];
   searchItems: CafSearchResponse[] = [];
 
   savedDate: Date;
   todate = "";
   observableVar: Subscription;
+  observableVar1: Subscription;
   public folder = "Dashboard";
   cafeCount = new CafDetailsResponse();
   currentDate: Date;
-  distributorName: string = "AVS Telecom"; //Distributor name from DB
 
   constructor(private localstorage: LocalStorageService,
     private router: Router,
@@ -43,28 +42,18 @@ export class DashboardPage implements OnInit {
     public popoverCtrl: PopoverController,
     private modalcontroller: ModalController,
     private helperclass: HelperClass, private apiservice: ApiService) {
-
     this.cafeCount.currentMonthApprovedCount = 0
     this.cafeCount.rejectedCount = 0;
     this.cafeCount.uploadedCount = 0
-
-
-
-
     this.localstorage.getDistributor()
       .then((res) => {
         if (res != null) {
           var distributore = new DistributorDetails();
           distributore = res;
           this.distributorId = distributore.distributorId;
-          console.log("Dashboard", JSON.stringify(distributore))
+
         }
       })
-
-
-
-
-
     this.platform.backButton.subscribeWithPriority(10, () => {
 
       if (window.confirm("Are You Sure You Want to Exit ? ")) {
@@ -72,7 +61,6 @@ export class DashboardPage implements OnInit {
       }
     });
   }
-
   async openModal() {
     const modal = await this.modalcontroller.create({
       component: DocTypeComponent,
@@ -82,253 +70,266 @@ export class DashboardPage implements OnInit {
     });
     return await modal.present();
   }
-
   ionViewWillLeave() {
     this.storage.remove("getBack");
-
   }
-
   dashboard(ev: any) {
-
-
     this.router.navigate(['/search-caf']);
   }
-
-
-
-
   ngOnInit() {
   }
 
-  ionViewDidEnter() {
-    this.localstorage.getDateAndTime()
-      .then((res) => {
-        if (res != null) {
-          this.savedDate = res
-        }
-      })
-      .catch((err) => {
-        console.log("Dashboard error in getting  dateAndTime details  " + JSON.stringify(err));
-
-        this.localstorage.storeDateAndTime(new Date().toString());
-      })
-
+  ionViewWillEnter() {
+ 
+    setTimeout(()=>{
+      this.loadUpdatedCaf();
+    },1500)
+    this.loadDashBoardDetails();
     this.storage.setItem('getBack', "true");
-
     if (!this.helperclass.isConnected()) {
       this.helperclass.showMessage(AppConstants.NoInternetConnectionErrMsg);
       return;
     }
-
-    this.loadDashBoardDetails()
-
-    setTimeout(() => {
-      this.loadUpdatedCaf()
-    }, 1500)
-
-
-    //REGRESH THE CALL AFTER EVERY 15 SECONDS
-
     this.observableVar = interval(15000).subscribe(() => {
       this.loadDashBoardDetails();
-
+    });
+    this.observableVar1 = interval(1000).subscribe(() => {
+      this.loadUpdatedCaf();
     });
   }
-
   ionViewDidLeave() {
-    //UNSUBSCRIBE THE OBASERVER
-
     this.observableVar.unsubscribe();
+    this.observableVar1.unsubscribe();
+    this.savedDate = null;
+    this.searchItems = [];
+
   }
+  loadUpdatedCaf(){
+    this.storage.getItem("cafItems").then((res)=>{
+      console.log("dashboard not empty");
 
-  loadUpdatedCaf() {
+      this.loadIfStorageIsNotEmpty(res);
+    })
+    .catch((err)=>{
+      console.log("dashboard empty");
+      
+      this.loadIfStorageIsEmpty();
 
+    })
+  }
+  loadIfStorageIsNotEmpty(res :any) {
+
+      let local  : CafSearchResponse[] = JSON.parse(res);
+      console.log("local==>"+JSON.stringify(local));
+      const searchPayload = new SearchCafeRequest();
+      searchPayload.signatureKey = AppConstants.signatureKey;
+      searchPayload.distributorId = this.distributorId.toString();
+      this.apiservice.SearchCaf(searchPayload)
+        .then((res) => {
+          let response = new GeneralResponse();
+          response = JSON.parse(res.data);
+          if (response.Result_Status.startsWith("S")) {
+            this.cafeItems = response.Result_Output;
+
+            this.searchItems = [];
+
+            // if(local != null && local != undefined && local.length !=0) {
+
+            // } else {
+            //   this.searchItems.push(this.cafeItems);
+            // }
+            for(var i=0; i<this.cafeItems.length;i++){
+            
+              if(i<local.length){
+                // if(this.cafeItems[i].cafId == local[i].cafId){
+                  if(this.cafeItems[i].cafStatus != local[i].cafStatus){
+                    console.log("STATS==>cafeItem status"+this.cafeItems[i].cafStatus);
+                    console.log("STATS==>local status"+local[i].cafStatus);
+
+                    if(!this.cafeItems[i].cafStatus.startsWith("U"))
+
+                    this.searchItems.push(this.cafeItems[i]);
+                  }
+                //}
+              //}
+            }
+            else{
+              if(!this.cafeItems[i].cafStatus.startsWith("U"))
+                    this.searchItems.push(this.cafeItems[i]);
+            }
+          }
+            console.log("searchItems==>"+this.searchItems);
+            if(this.searchItems.length >0){
+              this.openModal();
+            }
+
+            this.storage.setItem("cafItems",JSON.stringify(this.cafeItems));
+          }
+  
+        })
+        .catch((err) => {
+          this.helperclass.dismissLoading();
+         // this.helperclass.showMessage(AppConstants.apiErrorMessage)
+        })
+   
+  }
+  loadIfStorageIsEmpty() {
     const searchPayload = new SearchCafeRequest();
     searchPayload.signatureKey = AppConstants.signatureKey;
     searchPayload.distributorId = this.distributorId.toString();
-
     this.apiservice.SearchCaf(searchPayload)
       .then((res) => {
         let response = new GeneralResponse();
         response = JSON.parse(res.data);
-        this.cafeItems = response.Result_Output;
-
-        console.log("Dashboard Total Updated Cafs ", JSON.stringify(this.cafeItems))
-        if (this.cafeItems.length > 0) {
-
-          if (this.savedDate) {
-            this.filterArray();
-
-            console.log("Dashboard Filtered Cafs  having saved date  => " + this.savedDate, JSON.stringify(this.searchItems))
-
-
-            if (this.searchItems.length > 0) {
-
-              this.localstorage.storeDateAndTime(new Date().toString());
-
-              this.openModal();
-            }
-          }
-          else {
-            this.filterArrayIfDateIsEmpty();
-
-            console.log("Dashboard Filtered  Cafs having no saved date => " + this.savedDate, JSON.stringify(this.searchItems))
-
-            if (this.searchItems.length > 0) {
-              this.openModal();
-            }
+        if (response.Result_Status.startsWith("S")) {
+          this.cafeItems = response.Result_Output;
+          this.filterArrayIfDateIsEmpty();
+          if(this.searchItems.length >0){
+            this.openModal();
 
           }
-
+          this.storage.setItem("cafItems",JSON.stringify(this.cafeItems));
         }
 
       })
       .catch((err) => {
         this.helperclass.dismissLoading();
-        this.helperclass.showMessage(AppConstants.apiErrorMessage)
-        console.error("Dashboard  Error in loading Updated caf is " + JSON.stringify(err));
+       // this.helperclass.showMessage(AppConstants.apiErrorMessage)
       })
   }
-
-
-
   loadDashBoardDetails() {
     this.helperclass.showLoading("Loading...");
     var caferequest = new CafeCountRequest();
     caferequest.signatureKey = AppConstants.signatureKey;
     caferequest.distributorId = this.distributorId;
-
     this.apiservice.cafCountDetails(caferequest)
       .then((res) => {
         this.helperclass.dismissLoading()
           .then(() => {
             let response = new GeneralResponse();
             response = JSON.parse(res.data);
-            var result: CafDetailsResponse[];
+            if (response.Result_Status.startsWith("S")) {
+              var result: CafDetailsResponse[];
 
-            result = response.Result_Output;
-            if (result[0]) {
+              result = response.Result_Output;
+              if (result[0]) {
 
-              console.log("Dashboard details", JSON.stringify(response))
 
-              if (result.length == 1) {
+                if (result.length == 1) {
 
-                console.log("Dashboard single Result"+result.length)
-                this.daysArray=[];
-                this.cafeCount.uploadedCount = result[0].uploadedCount;
-                this.cafeCount.rejectedCount = result[0].rejectedCount;
-                this.cafeCount.currentMonthApprovedCount = result[0].currentMonthApprovedCount;
-                this.daysArray.push(result[0])
-              }
-              else {
-                console.log("Dashboard multiple  Result"+result.length)
+                  this.daysArray = [];
+                  this.cafeCount.uploadedCount = result[0].uploadedCount;
+                  this.cafeCount.rejectedCount = result[0].rejectedCount;
+                  this.cafeCount.currentMonthApprovedCount = result[0].currentMonthApprovedCount;
+                  this.daysArray.push(result[0])
+                }
+                else {
 
-                //results greater than 1
+                  //results greater than 1
 
-                this.cafeCount.uploadedCount = result[0].uploadedCount;
-                this.cafeCount.rejectedCount = result[0].rejectedCount;
-                this.cafeCount.currentMonthApprovedCount = result[0].currentMonthApprovedCount;
+                  this.cafeCount.uploadedCount = result[0].uploadedCount;
+                  this.cafeCount.rejectedCount = result[0].rejectedCount;
+                  this.cafeCount.currentMonthApprovedCount = result[0].currentMonthApprovedCount;
 
 
 
-                this.daysArray = [];
+                  this.daysArray = [];
 
-                for (var i = 1; i < result.length; i++) {
+                  for (var i = 1; i < result.length; i++) {
 
-                  var res1 = new CafDetailsResponse();
+                    var res1 = new CafDetailsResponse();
 
-                  if (result[i].dailyUploadedCount == undefined) {
+                    if (result[i].dailyUploadedCount == undefined) {
 
-                    res1.dailyRejectedCount = result[i].dailyRejectedCount;
-                    res1.cafAuditDatetime = result[i].cafAuditDatetime;
-                    res1.dailyApprovedCount = result[i].dailyApprovedCount;
-                    res1.dailyUploadedCount = 0;
-                    this.daysArray.push(res1);
+                      res1.dailyRejectedCount = result[i].dailyRejectedCount;
+                      res1.cafAuditDatetime = result[i].cafAuditDatetime;
+                      res1.dailyApprovedCount = result[i].dailyApprovedCount;
+                      res1.dailyUploadedCount = 0;
+                      this.daysArray.push(res1);
 
-                  }
-
-                  else {
-                    var bool = false;
-                    var till, a = 0;
-
-                    if (this.daysArray.length == 0) {
-                      till = result.length;
-                      a = 1
                     }
+
                     else {
-                      till = this.daysArray.length;
-                      a = 0;
-                    }
+                      var bool = false;
+                      var till, a = 0;
+
+                      if (this.daysArray.length == 0) {
+                        till = result.length;
+                        a = 1
+                      }
+                      else {
+                        till = this.daysArray.length;
+                        a = 0;
+                      }
 
 
-                    if (this.daysArray.length > 0) {
-                      for (a; a < till; a++) {
-                        if (this.getFormattedDate(this.daysArray[a].cafAuditDatetime) == this.getFormattedDate(result[i].cafUploadedDatetime)) {
-                          this.daysArray[a].dailyUploadedCount = result[i].dailyUploadedCount;
-                          bool = true;
-                          break;
+                      if (this.daysArray.length > 0) {
+                        for (a; a < till; a++) {
+                          if (this.getFormattedDate(this.daysArray[a].cafAuditDatetime) == this.getFormattedDate(result[i].cafUploadedDatetime)) {
+                            this.daysArray[a].dailyUploadedCount = result[i].dailyUploadedCount;
+                            bool = true;
+                            break;
+
+                          }
+                        }
+
+                        if (!bool) {
+                          res1.cafAuditDatetime = result[i].cafUploadedDatetime;
+                          res1.dailyApprovedCount = 0;
+                          res1.dailyRejectedCount = 0;
+                          res1.dailyUploadedCount = result[i].dailyUploadedCount;
+                          this.daysArray.push(res1);
 
                         }
                       }
-
-                      if (!bool) {
+                      else {
                         res1.cafAuditDatetime = result[i].cafUploadedDatetime;
                         res1.dailyApprovedCount = 0;
                         res1.dailyRejectedCount = 0;
                         res1.dailyUploadedCount = result[i].dailyUploadedCount;
                         this.daysArray.push(res1);
-
                       }
-                    }
-                    else {
-                      res1.cafAuditDatetime = result[i].cafUploadedDatetime;
-                      res1.dailyApprovedCount = 0;
-                      res1.dailyRejectedCount = 0;
-                      res1.dailyUploadedCount = result[i].dailyUploadedCount;
-                      this.daysArray.push(res1);
+
                     }
 
                   }
+                }
+                if (this.daysArray[0].cafAuditDatetime) {
+                  this.fromdate = this.getFormattedDate(this.daysArray[0].cafAuditDatetime);
 
                 }
+                else if (this.daysArray[0].cafUploadedDatetime) {
+                  this.fromdate = this.getFormattedDate(this.daysArray[0].cafUploadedDatetime);
+
+                }
+
+
+                if (this.daysArray[this.daysArray.length - 1].cafAuditDatetime) {
+                  this.todate = this.getFormattedDate(this.daysArray[this.daysArray.length - 1].cafAuditDatetime);
+
+                }
+                else if (this.daysArray[this.daysArray.length - 1].cafUploadedDatetime) {
+                  this.todate = this.getFormattedDate(this.daysArray[this.daysArray.length - 1].cafUploadedDatetime);
+
+                }
+
+                this.daysArray.reverse();
               }
-              if (this.daysArray[0].cafAuditDatetime) {
-                this.fromdate = this.getFormattedDate(this.daysArray[0].cafAuditDatetime);
-
-              }
-              else if (this.daysArray[0].cafUploadedDatetime) {
-                this.fromdate = this.getFormattedDate(this.daysArray[0].cafUploadedDatetime);
-
-              }
-
-
-              if (this.daysArray[this.daysArray.length - 1].cafAuditDatetime) {
-                this.todate = this.getFormattedDate(this.daysArray[this.daysArray.length - 1].cafAuditDatetime);
-
-              }
-              else if (this.daysArray[this.daysArray.length - 1].cafUploadedDatetime) {
-                this.todate = this.getFormattedDate(this.daysArray[this.daysArray.length - 1].cafUploadedDatetime);
-
-              }
-
-              this.daysArray.reverse();
             }
+
           })
       })
       .catch((err) => {
         this.helperclass.dismissLoading();
-        console.error("Dashboard   Error  is " + JSON.stringify(err));
       })
   }
 
   uploadCaf() {
     this.router.navigate(['/upload-caf']);
-
   }
 
   searchCafe() {
     this.router.navigate(['/search-caf']);
-
   }
 
   getFormattedDate(date: string): any {
@@ -339,28 +340,7 @@ export class DashboardPage implements OnInit {
       return abc.replace(',', '');
     }
   }
-  filterArray() {
 
-    this.searchItems = []
-    var date = new Date(this.savedDate);
-    
-    this.cafeItems.forEach(element => {
-      if (element.cafApprovedDatetime) {
-
-        var dateString = element.cafApprovedDatetime.replace(',', '').replace('AM', '').replace('PM', '');
-        // dateString.split
-        var fetchedDate = new Date(dateString);
-
-        fetchedDate.setHours(fetchedDate.getHours() + 12);
-        if (fetchedDate > date) {
-          if (element.cafStatus != 'Uploaded')
-            this.searchItems.push(element)
-        }
-
-      }
-    });
-
-  }
 
   filterArrayIfDateIsEmpty() {
     this.searchItems = []
@@ -374,6 +354,7 @@ export class DashboardPage implements OnInit {
 
       }
     });
+
   }
 
 }

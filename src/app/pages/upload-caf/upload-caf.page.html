@@ -34,7 +34,7 @@
     <ion-text *ngIf="caf.cafNumber">CAF Number<span style="color: red">*</span></ion-text>
     <ion-card>
       <ion-item>
-        <ion-input required type="text"  [(ngModel)]="caf.cafNumber" name="CAF_Number" placeholder="CAF Number*">
+        <ion-input required type="text" maxlength="20" [(ngModel)]="caf.cafNumber" name="CAF_Number" placeholder="CAF Number*">
         </ion-input>
       </ion-item>
     </ion-card>
@@ -42,7 +42,7 @@
     <ion-text *ngIf="caf.customerName ">Customer Name<span style="color: red">*</span></ion-text>
     <ion-card>
       <ion-item>
-        <ion-input required type="text" [(ngModel)]="caf.customerName" name="Customer_Name"
+        <ion-input required type="text" maxlength="50" [(ngModel)]="caf.customerName" name="Customer_Name"
           placeholder="Customer Name*"></ion-input>
       </ion-item>
     </ion-card>
@@ -50,16 +50,30 @@
     <ion-text *ngIf="caf.mobileNumber ">Mobile Number<span style="color: red">*</span></ion-text>
     <ion-card>
       <ion-item>
-        <ion-input required inputmode="numeric" [maxlength]="this.maxlength" [(ngModel)]="caf.mobileNumber" name="Customer_Name"
+        <ion-input required inputmode="numeric" [maxlength]="this.maxlength" [(ngModel)]="caf.mobileNumber" name="mobile_number"
           placeholder="Mobile Number*"></ion-input>
       </ion-item>
     </ion-card>
 
-    <ion-text *ngIf="caf.fatherName">Father Name<span style="color: red">*</span></ion-text>
+    <!-- <ion-text *ngIf="caf.fatherName">Firm Name<span style="color: red">*</span></ion-text>
     <ion-card>
       <ion-item>
-        <ion-input required type="text" [(ngModel)]="caf.fatherName" name="Father name*" placeholder="Father Name*">
+        <ion-input required type="text" [maxlength]="50" [(ngModel)]="caf.fatherName" name="firm_name*" placeholder="Firm Name*">
         </ion-input>
+      </ion-item>
+    </ion-card> -->
+
+    <ion-card>
+      <ion-item>
+        <ion-label><h4><b>FIRM Type</b></h4></ion-label>
+        <ion-select required [(ngModel)]="caf.fatherName" (ionChange)="selectFirmType($event)" [placeholder]="placeholder">
+          <ion-select-option value="PL">PL</ion-select-option>
+          <ion-select-option value="Private Limited,">Private Limited</ion-select-option>
+          <ion-select-option value="Private Limited">Proprietorship</ion-select-option>
+          <ion-select-option value="Partnership">Partnership</ion-select-option>
+          <!-- <ion-select-option value="Sim Exchange">Sim Exchange</ion-select-option> -->
+        </ion-select>
+
       </ion-item>
     </ion-card>
 
@@ -67,7 +81,7 @@
     <ion-text *ngIf="caf.companyName">Company Name</ion-text>
     <ion-card>
       <ion-item>
-        <ion-input type="text" [(ngModel)]="caf.companyName" name="Company_Name" placeholder="Company Name ">
+        <ion-input type="text"  [maxlength]="30"  [(ngModel)]="caf.companyName"  name="Company_Name" placeholder="Company Name ">
         </ion-input>
       </ion-item>
     </ion-card>
@@ -87,7 +101,7 @@
     <ion-text *ngIf="caf.notes">Notes</ion-text>
     <ion-card>
       <ion-item>
-        <ion-textarea [(ngModel)]="caf.notes" type="text" name="notes" placeholder="Notes"></ion-textarea>
+        <ion-textarea [(ngModel)]="caf.notes"  [maxlength]="100"  type="text" name="notes" placeholder="Notes"></ion-textarea>
       </ion-item>
     </ion-card>
 

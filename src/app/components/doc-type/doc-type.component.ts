@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { CafSearchResponse } from 'src/app/modals/modal';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
+import { AppConstants } from 'src/app/utils/AppConstants';
 
 @Component({
   selector: 'app-doc-type',
@@ -11,10 +13,12 @@ import { CafSearchResponse } from 'src/app/modals/modal';
 export class DocTypeComponent implements OnInit {
 
   constructor(private modalCtrl: ModalController,
-    private router  : Router) { }
+    private router  : Router,
+    private storage : NativeStorage) { }
     searchItems: CafSearchResponse[] = [];
 
     @Input() public lunch: any;
+    
 
   ngOnInit() { }
 
@@ -35,6 +39,7 @@ export class DocTypeComponent implements OnInit {
 
   }
   ionViewWillEnter(){
+    // this.storage.setItem(AppConstants.dateAndTime, new Date().toString())
   
    this.searchItems = this.lunch;
 

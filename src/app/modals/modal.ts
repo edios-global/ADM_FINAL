@@ -39,6 +39,7 @@ export class CafSearchResponse {
     notes: string
     fatherName: string
     mobileNumber: string
+    cafAuditNotes:string
 
 }
 export class cafIdResponse {

@@ -22,6 +22,8 @@ export class EditImagesPage implements OnInit {
   poiImages: cafImages[] = [];
   poaImages: cafImages[] = [];
   poImages: cafImages[] = [];
+  asImages: cafImages[] = [];
+  dfImages: cafImages[] = [];
   cafDataIntent = new CafePayload();
   cafId: string;
   deleteNotes ="";
@@ -134,30 +136,76 @@ export class EditImagesPage implements OnInit {
   addCafImage(type: string) {
     var changeStatus = false;
     if(type == 'PO'){
-      if(this.cafImages.length > 0 && this.poiImages.length  >0 && this.poaImages.length  >0){
-        changeStatus = true;
+      if(this.cafDataIntent.cafType.startsWith("V")){
+        if(this.cafImages.length > 0 && this.poiImages.length  >0 && this.poaImages.length  >0 && this.asImages.length >0){
+          changeStatus = true;
+        }
       }
+      if(this.cafDataIntent.cafType.startsWith("M")){
+        if(this.cafImages.length > 0 && this.poiImages.length  >0 && this.poaImages.length  >0 && this.dfImages.length >0){
+          changeStatus = true;
+        }
+      }
+      
     }
 
     else if(type == 'CAF'){
-      if(this.poImages.length > 0 && this.poiImages.length  >0 && this.poaImages.length  >0){
-        changeStatus = true;
+
+      if(this.cafDataIntent.cafType.startsWith("V")){
+        if(this.poImages.length > 0 && this.poiImages.length  >0 && this.poaImages.length  >0 && this.asImages.length >0){
+          changeStatus = true;
+        }
       }
+      if(this.cafDataIntent.cafType.startsWith("M")){
+        if(this.poImages.length > 0 && this.poiImages.length  >0 && this.poaImages.length  >0 && this.dfImages.length >0){
+          changeStatus = true;
+        }
+      }
+      
     }
 
 
     else if(type == 'POA'){
-      if(this.cafImages.length > 0 && this.poiImages.length  >0 && this.poImages.length  >0){
-        changeStatus = true;
+      if(this.cafDataIntent.cafType.startsWith("V")){
+        if(this.cafImages.length > 0 && this.poiImages.length  >0 && this.poImages.length  >0 && this.asImages.length >0){
+          changeStatus = true;
+        }
       }
+      if(this.cafDataIntent.cafType.startsWith("M")){
+        if(this.cafImages.length > 0 && this.poiImages.length  >0 && this.poImages.length  >0 && this.dfImages.length >0){
+          changeStatus = true;
+        }
+      }
+      
     }
 
 
    else if(type == 'POI'){
-      if(this.cafImages.length > 0 && this.poImages.length  >0 && this.poaImages.length  >0){
+    if(this.cafDataIntent.cafType.startsWith("V")){
+      if(this.cafImages.length > 0 && this.poImages.length  >0 && this.poaImages.length  >0  && this.asImages.length >0){
         changeStatus = true;
       }
     }
+    if(this.cafDataIntent.cafType.startsWith("M")){
+      if(this.cafImages.length > 0 && this.poImages.length  >0 && this.poaImages.length  >0  && this.asImages.length >0){
+        changeStatus = true;
+      }
+    }
+      
+    }
+    else if(type == 'AS'){
+      
+        if(this.cafImages.length > 0 && this.poImages.length  >0 && this.poaImages.length  >0  && this.poiImages.length >0){
+          changeStatus = true;
+        }
+      }
+
+      else if(type == 'DF'){
+      
+        if(this.cafImages.length > 0 && this.poImages.length  >0 && this.poaImages.length  >0  && this.poiImages.length >0){
+          changeStatus = true;
+        }
+      }
    
 
     let cafidR = new cafIdResponse();
@@ -182,6 +230,8 @@ export class EditImagesPage implements OnInit {
     this.poiImages = [];
     this.poaImages = [];
     this.poImages = [];
+    this.asImages = [];
+    this.dfImages = [];
 
     this.images.forEach(element => {
 
@@ -201,6 +251,14 @@ export class EditImagesPage implements OnInit {
         this.poImages.push(element);
       }
 
+      else if (element.documentType.toLowerCase() == "as") {
+        this.asImages.push(element);
+      }
+
+      else if (element.documentType.toLowerCase() == "df") {
+        this.dfImages.push(element);
+      }
+
 
     });
 
@@ -217,6 +275,7 @@ export class EditImagesPage implements OnInit {
       {
         name: 'name1',
         type: 'textarea',
+        max :500,
       
         cssClass:'reasoninput'
         // placeholder: 'Please enter the reason to remove this image'
@@ -316,6 +375,18 @@ await alert.present();
                 else if (type == "PO") {
                   this.poImages.splice(i, 1);
                   if(this.poImages.length ==0){
+                    this.updateCafStatus();
+                  }
+                }
+                else if (type == "AS") {
+                  this.asImages.splice(i, 1);
+                  if(this.asImages.length ==0){
+                    this.updateCafStatus();
+                  }
+                }
+                else if (type == "DF") {
+                  this.dfImages.splice(i, 1);
+                  if(this.dfImages.length ==0){
                     this.updateCafStatus();
                   }
                 }

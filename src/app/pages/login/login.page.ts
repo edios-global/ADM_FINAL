@@ -24,16 +24,16 @@ export class LoginPage implements OnInit {
     private router: Router,
     private storage: NativeStorage,
     private platform: Platform) {
-    this.localstorageService.getDistributor()
-      .then((distributor) => {
-        console.log("Login Page" + JSON.stringify(distributor));
-        if (distributor != null) {
-          this.router.navigate(['/dashboard']);
-        }
-      })
-      .catch((err) => {
-        console.log("ADM" + JSON.stringify(err))
-      })
+    // this.localstorageService.getDistributor()
+    //   .then((distributor) => {
+    //     console.log("Login Page" + JSON.stringify(distributor));
+    //     if (distributor != null) {
+    //       this.router.navigate(['/dashboard']);
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.log("ADM" + JSON.stringify(err))
+    //   })
   }
 
 

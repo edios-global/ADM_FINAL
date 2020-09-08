@@ -60,7 +60,7 @@ export class SearchCafPage implements OnInit {
 
   editCaf(index: number) {
 
-    if (this.searchItems[index].cafStatus == 'Uploaded' || this.searchItems[index].cafStatus == 'Pending') {
+    if (this.searchItems[index].cafStatus == 'Uploaded' || this.searchItems[index].cafStatus == 'Pending'|| this.searchItems[index].cafStatus == 'Rejected') {
       let navigationExtras: NavigationExtras = {
         state: {
           itemSend: this.searchItems[index]
@@ -113,24 +113,32 @@ export class SearchCafPage implements OnInit {
 
     this.apiservice.SearchCaf(searchPayload)
       .then((res) => {
+        this.helperclass.dismissLoading();
 
         //RESPONSE FROM SERVER
         
         let response = new GeneralResponse();
         response = JSON.parse(res.data);
-        this.cafeItems = response.Result_Output;
-        console.log("SEARCH Response" + JSON.stringify(this.cafeItems));
-        
-
-        //FILTER ARRAY ON SEARCH ENTRY
-        this.filterArray();
-        console.log("SEARCH Response RESULT" + JSON.stringify(this.searchItems));
-        
-        this.helperclass.dismissLoading()
-        console.log("SEARCH PAGE SEARCHED RESULT IS" + this.searchItems.length)
-        if (this.searchItems.length == 0) {
-          this.helperclass.showMessage("No CAF Found , Try Again")
+        if(response.Result_Status.startsWith("S")){
+          this.cafeItems = response.Result_Output;
+          console.log("SEARCH Response" + JSON.stringify(response));
+          
+  
+          //FILTER ARRAY ON SEARCH ENTRY
+          this.filterArray();
+          console.log("SEARCH Response RESULT" + JSON.stringify(this.searchItems));
+          
+          this.helperclass.dismissLoading()
+          console.log("SEARCH PAGE SEARCHED RESULT IS" + this.searchItems.length)
+          if (this.searchItems.length == 0) {
+            this.helperclass.showMessage("No CAF Found , Try Again")
+          }
         }
+        else{
+          this.helperclass.showMessage("No CAF Found , Try Again")
+
+        }
+        
       })
       .catch((err) => {
         this.helperclass.dismissLoading();

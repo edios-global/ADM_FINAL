@@ -46,7 +46,9 @@ export class UploadCafPage implements OnInit {
       this.iconname="create-outline";
       var caf = new CafSearchResponse();
       caf = this.router.getCurrentNavigation().extras.state.itemSend;
-
+      if(caf.cafStatus.startsWith("R")){
+        this.buttonName = "Resubmit Rejection"
+      }
       console.log("EDIT CAF " + JSON.stringify(caf))
       this.placeholder = ""
 
@@ -86,6 +88,11 @@ export class UploadCafPage implements OnInit {
     }
   }
 
+  selectFirmType(event: any) {
+
+    this.caf.fatherName = event.target.value;
+  }
+
   validateCafe() {
 
     if (!this.caf.cafType) {
@@ -104,6 +111,10 @@ export class UploadCafPage implements OnInit {
       return;
 
     }
+    if (this.caf.cafNumber.length > 20) {
+      this.helperclass.showMessage("CAF number can't be more than 20 characters");
+      return;
+    }
 
 
     if (!this.caf.customerName) {
@@ -115,6 +126,10 @@ export class UploadCafPage implements OnInit {
       this.helperclass.showMessage("Only Alphabets are allowed in Customer name");
       return;
 
+    }
+    if (this.caf.customerName.length > 50) {
+      this.helperclass.showMessage("Customer name can't be more than 50 characters");
+      return;
     }
 
     if (!this.caf.mobileNumber) {
@@ -160,16 +175,32 @@ export class UploadCafPage implements OnInit {
     // }
 
 
+    // if (!this.caf.fatherName) {
+    //   this.helperclass.showMessage("Please enter your Firm name");
+    //   return;
+    // }
+
+    // var expr5 = /^[a-zA-z ]*$/;
+    // if (!expr5.test(this.caf.fatherName)) {
+    //   this.helperclass.showMessage("Only Alphabets are allowed in Firm name");
+    //   return;
+
+    // }
+    // if (this.caf.fatherName.length > 50) {
+    //   this.helperclass.showMessage("Father name can't be more than 50 characters");
+    //   return;
+    // }
     if (!this.caf.fatherName) {
-      this.helperclass.showMessage("Please enter your father name");
+      this.helperclass.showMessage("Please select FIRM type");
       return;
     }
 
-    var expr5 = /^[a-zA-z ]*$/;
-    if (!expr5.test(this.caf.fatherName)) {
-      this.helperclass.showMessage("Only Alphabets are allowed in Father name");
-      return;
 
+    if (this.caf.companyName) {
+      if (this.caf.companyName.length > 30) {
+        this.helperclass.showMessage("Company  name can't be more than 30 characters");
+        return;
+      }
     }
 
     if (!this.caf.noOfConnections) {
@@ -195,7 +226,12 @@ export class UploadCafPage implements OnInit {
       return;
     }
 
-
+if(this.caf.notes){
+  if (this.caf.notes.length > 100) {
+    this.helperclass.showMessage("CAF Notes can't be more than 100 characters");
+    return;
+  }
+}
 
 
     if (!this.helperclass.isConnected()) {
@@ -216,7 +252,7 @@ export class UploadCafPage implements OnInit {
 
     if (this.buttonName == 'Edit') {
       this.helperclass.showLoading("Updating CAF Details..");
-
+      console.log("Edit Caf  Payload is"+JSON.stringify(this.caf))
       this.apiservice.editCafData(this.caf).
         then((result) => {
           this.helperclass.dismissLoading()
