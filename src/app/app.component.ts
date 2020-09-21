@@ -12,8 +12,9 @@ import { Broadcaster } from '@ionic-native/broadcaster/ngx';
 import { AppConstants } from './utils/AppConstants';
 import { AppVersion } from '@ionic-native/app-version/ngx';
 import { ApiService } from './services/api/api';
-import { LoginRequest } from './modals/payload';
+import { LoginRequest, AppVersionResponse } from './modals/payload';
 import { tick } from '@angular/core/testing';
+import { Market } from '@ionic-native/market/ngx';
 
 
 @Component({
@@ -26,9 +27,10 @@ export class AppComponent {
   distributorName = "";
   dashboardClass = "active";
   contactClass = "noactive";
-  apiversion = "";
+  appV = "";
 
   constructor(
+    private market: Market,
     private broadcaster: Broadcaster,
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -37,12 +39,12 @@ export class AppComponent {
     private storage: NativeStorage,
     private screenOrientation: ScreenOrientation,
     private localstorge: LocalStorageService,
-    private appversion:AppVersion,
-    private api:ApiService
+    private appversion: AppVersion,
+    private api: ApiService
   ) {
-    this.appversion.getVersionNumber().then((res)=>{
+    this.appversion.getVersionNumber().then((res) => {
       console.log("AppComponent version name" + res);
-      this.apiversion = res;
+      this.appV = res;
     })
     this.initializeApp();
     this.backPressed();
@@ -59,12 +61,13 @@ export class AppComponent {
 
 
 
-      this.broadcaster.addEventListener('user').subscribe((event) => {
-        console.log("Appcomponent" ,"broadcast even received"+JSON.stringify(event) )
-        const details = JSON.parse(JSON.stringify(event));
-       this.distributorName = details.user.distributorName;
-    
-       });
+
+    this.broadcaster.addEventListener('user').subscribe((event) => {
+      console.log("AppComponent", "broadcast even received" + JSON.stringify(event))
+      const details = JSON.parse(JSON.stringify(event));
+      this.distributorName = details.user.distributorName;
+
+    });
 
   }
 
@@ -72,40 +75,56 @@ export class AppComponent {
     this.platform.ready().then(() => {
       this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
       this.statusBar.styleDefault();
+      this.statusBar.overlaysWebView(false);
+      this.statusBar.backgroundColorByHexString("#4d71d7")
       this.splashScreen.hide();
-      var loginRequest = new LoginRequest();
-          loginRequest.signatureKey = AppConstants.signatureKey
+    
+      this.appversion.getVersionNumber().then((res) => {
+        this.appV = res;
+        var loginRequest = new LoginRequest();
+        loginRequest.signatureKey = AppConstants.signatureKey
+        this.api.AdmAppVersion(loginRequest).then((res) => {
+          var abc: AppVersionResponse = JSON.parse(res.data);
+          console.log("Appcomponent AppUpdate Current "+ this.appV +" ===  Api"+abc.Result_Output)
 
+          if (this.appV != abc.Result_Output) {
+            if (window.confirm("Update Required")) {
+              this.market.open('com.edios.adm');
+            }
+            else {
+              navigator['app'].exitApp();
+            }
+          }
 
-      this.api.AdmAppVersion(loginRequest).then((res)=>{
-       if(this.apiversion != res.data.Result_Output){
-         alert("Update Required");
-       }
+        })
+
       })
+
 
       this.localstorge.getDistributor()
-      .then((distributor) => {
-        console.log("Login Page" + JSON.stringify(distributor));
-        
-        if (distributor != null) {
-          this.router.navigate(['/dashboard']);
-        }
-        else{
-          this.router.navigate(['/login']);
-        }
-      })
-      .catch((err) => {
-        console.log("ADM" + JSON.stringify(err))
-        this.router.navigate(['/login']);
+        .then((distributor) => {
+          console.log("Login Page" + JSON.stringify(distributor));
 
-      })
+          if (distributor != null) {
+            this.router.navigate(['/dashboard']);
+          }
+          else {
+            this.router.navigate(['/login']);
+          }
+        })
+        .catch((err) => {
+          console.log("ADM" + JSON.stringify(err))
+          this.router.navigate(['/login']);
+
+        })
+
 
     });
   }
   signOut() {
 
     if (window.confirm("Are you sure you want to Sign Out? ")) {
-     this.storage.clear();
+      this.storage.clear();
       this.router.navigate(['/login']);
 
     }

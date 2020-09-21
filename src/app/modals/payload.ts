@@ -14,6 +14,13 @@ export class SearchCafeRequest {
     distributorId:string
 
 }
+export class AppVersionResponse{
+    
+        Result_Status: string
+        Result_Output: string
+        Result_Code: string
+    
+}
 
 export class CafePayload {
 

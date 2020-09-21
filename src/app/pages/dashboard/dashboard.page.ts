@@ -1,6 +1,6 @@
 import { DistributorDetails, SevenDaysResponse, DateAndTime, CafSearchResponse, LoginResponse } from './../../modals/modal';
 import { AppConstants } from 'src/app/utils/AppConstants';
-import { CafeCountRequest, SearchCafeRequest } from './../../modals/payload';
+import { CafeCountRequest, SearchCafeRequest, LoginRequest, AppVersionResponse } from './../../modals/payload';
 import { HelperClass } from './../../utils/HelperClasses';
 import { LocalStorageService } from './../../services/storage/localStorage';
 import { Component, OnInit } from '@angular/core';
@@ -12,6 +12,9 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Subscription, Observable } from 'rxjs';
 import { interval } from 'rxjs';
 import { DocTypeComponent } from 'src/app/components/doc-type/doc-type.component';
+import { Market } from '@ionic-native/market/ngx';
+import { AppVersion } from '@ionic-native/app-version/ngx';
+import { async } from 'rxjs/internal/scheduler/async';
 
 @Component({
   selector: 'app-dashboard',
@@ -34,9 +37,13 @@ export class DashboardPage implements OnInit {
   public folder = "Dashboard";
   cafeCount = new CafDetailsResponse();
   currentDate: Date;
+  appV = "";
+
 
   constructor(private localstorage: LocalStorageService,
     private router: Router,
+    private market: Market,
+    private appversion: AppVersion,
     private platform: Platform,
     private storage: NativeStorage,
     public popoverCtrl: PopoverController,
@@ -80,10 +87,30 @@ export class DashboardPage implements OnInit {
   }
 
   ionViewWillEnter() {
- 
-    setTimeout(()=>{
+    this.appversion.getVersionNumber().then((res) => {
+      this.appV = res;
+      var loginRequest = new LoginRequest();
+      loginRequest.signatureKey = AppConstants.signatureKey
+      this.apiservice.AdmAppVersion(loginRequest).then((res) => {
+        var abc: AppVersionResponse = JSON.parse(res.data);
+        console.log("DashBoard AppUpdate Current "+ this.appV +" ===  Api"+abc.Result_Output)
+
+        if (this.appV != abc.Result_Output) {
+          if (window.confirm("Update Required")) {
+            this.market.open('com.edios.adm');
+          }
+          else {
+            navigator['app'].exitApp();
+          }
+        }
+
+      })
+
+    })
+
+    setTimeout(() => {
       this.loadUpdatedCaf();
-    },1500)
+    }, 1500)
     this.loadDashBoardDetails();
     this.storage.setItem('getBack', "true");
     if (!this.helperclass.isConnected()) {
@@ -104,74 +131,74 @@ export class DashboardPage implements OnInit {
     this.searchItems = [];
 
   }
-  loadUpdatedCaf(){
-    this.storage.getItem("cafItems").then((res)=>{
+  loadUpdatedCaf() {
+    this.storage.getItem("cafItems").then((res) => {
       console.log("dashboard not empty");
 
       this.loadIfStorageIsNotEmpty(res);
     })
-    .catch((err)=>{
-      console.log("dashboard empty");
-      
-      this.loadIfStorageIsEmpty();
+      .catch((err) => {
+        console.log("dashboard empty");
 
-    })
+        this.loadIfStorageIsEmpty();
+
+      })
   }
-  loadIfStorageIsNotEmpty(res :any) {
+  loadIfStorageIsNotEmpty(res: any) {
 
-      let local  : CafSearchResponse[] = JSON.parse(res);
-      console.log("local==>"+JSON.stringify(local));
-      const searchPayload = new SearchCafeRequest();
-      searchPayload.signatureKey = AppConstants.signatureKey;
-      searchPayload.distributorId = this.distributorId.toString();
-      this.apiservice.SearchCaf(searchPayload)
-        .then((res) => {
-          let response = new GeneralResponse();
-          response = JSON.parse(res.data);
-          if (response.Result_Status.startsWith("S")) {
-            this.cafeItems = response.Result_Output;
+    let local: CafSearchResponse[] = JSON.parse(res);
+    console.log("local==>" + JSON.stringify(local));
+    const searchPayload = new SearchCafeRequest();
+    searchPayload.signatureKey = AppConstants.signatureKey;
+    searchPayload.distributorId = this.distributorId.toString();
+    this.apiservice.SearchCaf(searchPayload)
+      .then((res) => {
+        let response = new GeneralResponse();
+        response = JSON.parse(res.data);
+        if (response.Result_Status.startsWith("S")) {
+          this.cafeItems = response.Result_Output;
 
-            this.searchItems = [];
+          this.searchItems = [];
 
-            // if(local != null && local != undefined && local.length !=0) {
+          // if(local != null && local != undefined && local.length !=0) {
 
-            // } else {
-            //   this.searchItems.push(this.cafeItems);
-            // }
-            for(var i=0; i<this.cafeItems.length;i++){
-            
-              if(i<local.length){
-                // if(this.cafeItems[i].cafId == local[i].cafId){
-                  if(this.cafeItems[i].cafStatus != local[i].cafStatus){
-                    console.log("STATS==>cafeItem status"+this.cafeItems[i].cafStatus);
-                    console.log("STATS==>local status"+local[i].cafStatus);
+          // } else {
+          //   this.searchItems.push(this.cafeItems);
+          // }
+          for (var i = 0; i < this.cafeItems.length; i++) {
 
-                    if(!this.cafeItems[i].cafStatus.startsWith("U"))
+            if (i < local.length) {
+              // if(this.cafeItems[i].cafId == local[i].cafId){
+              if (this.cafeItems[i].cafStatus != local[i].cafStatus) {
+                console.log("STATS==>cafeItem status" + this.cafeItems[i].cafStatus);
+                console.log("STATS==>local status" + local[i].cafStatus);
 
-                    this.searchItems.push(this.cafeItems[i]);
-                  }
-                //}
+                if (!this.cafeItems[i].cafStatus.startsWith("U"))
+
+                  this.searchItems.push(this.cafeItems[i]);
+              }
+              //}
               //}
             }
-            else{
-              if(!this.cafeItems[i].cafStatus.startsWith("U"))
-                    this.searchItems.push(this.cafeItems[i]);
+            else {
+              if (!this.cafeItems[i].cafStatus.startsWith("U"))
+                this.searchItems.push(this.cafeItems[i]);
             }
           }
-            console.log("searchItems==>"+this.searchItems);
-            if(this.searchItems.length >0){
-              this.openModal();
-            }
+          console.log("searchItems==>" + this.searchItems);
+          if (this.searchItems.length > 0) {
+            this.openModal();
+          }
 
-            this.storage.setItem("cafItems",JSON.stringify(this.cafeItems));
-          }
-  
-        })
-        .catch((err) => {
-          this.helperclass.dismissLoading();
-         // this.helperclass.showMessage(AppConstants.apiErrorMessage)
-        })
-   
+          this.storage.setItem("cafItems", JSON.stringify(this.cafeItems));
+        }
+
+      })
+      .catch((err) => {
+        this.helperclass.dismissLoading();
+        // this.helperclass.showMessage(AppConstants.apiErrorMessage)
+      })
+
   }
   loadIfStorageIsEmpty() {
     const searchPayload = new SearchCafeRequest();
@@ -184,17 +211,17 @@ export class DashboardPage implements OnInit {
         if (response.Result_Status.startsWith("S")) {
           this.cafeItems = response.Result_Output;
           this.filterArrayIfDateIsEmpty();
-          if(this.searchItems.length >0){
+          if (this.searchItems.length > 0) {
             this.openModal();
 
           }
-          this.storage.setItem("cafItems",JSON.stringify(this.cafeItems));
+          this.storage.setItem("cafItems", JSON.stringify(this.cafeItems));
         }
 
       })
       .catch((err) => {
         this.helperclass.dismissLoading();
-       // this.helperclass.showMessage(AppConstants.apiErrorMessage)
+        // this.helperclass.showMessage(AppConstants.apiErrorMessage)
       })
   }
   loadDashBoardDetails() {

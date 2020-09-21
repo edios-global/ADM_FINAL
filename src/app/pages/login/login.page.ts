@@ -6,6 +6,11 @@ import { User } from 'src/app/modals/modal';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
+import { Market } from '@ionic-native/market/ngx';
+import { AppVersion } from '@ionic-native/app-version/ngx';
+import { LoginRequest, AppVersionResponse } from 'src/app/modals/payload';
+import { AppConstants } from 'src/app/utils/AppConstants';
+import { ApiService } from 'src/app/services/api/api';
 
 @Component({
   selector: 'app-login',
@@ -19,11 +24,16 @@ export class LoginPage implements OnInit {
   tag = "LoginPage"
   contactClass="hide";
   buildVersion = 1.0;
+  appV = "";
   constructor(private loginService: LoginService,
     private localstorageService: LocalStorageService,
     private router: Router,
     private storage: NativeStorage,
+    private market: Market,
+    private appversion: AppVersion,
+    private apiservice: ApiService,
     private platform: Platform) {
+    
     // this.localstorageService.getDistributor()
     //   .then((distributor) => {
     //     console.log("Login Page" + JSON.stringify(distributor));
@@ -45,6 +55,45 @@ export class LoginPage implements OnInit {
   ionViewWillLeave() {
     this.storage.remove("getBack");
     console.log("loginGetBack Removed");
+  }
+
+  ionViewWillEnter() {
+    this.appversion.getVersionNumber().then((res) => {
+      this.appV = res;
+      var loginRequest = new LoginRequest();
+      loginRequest.signatureKey = AppConstants.signatureKey
+      this.apiservice.AdmAppVersion(loginRequest).then((res) => {
+        var abc: AppVersionResponse = JSON.parse(res.data);
+        console.log("Login  AppUpdate Current "+ this.appV +" ===  Api"+abc.Result_Output)
+
+        if (this.appV != abc.Result_Output) {
+          if (window.confirm("Update Required")) {
+            this.market.open('com.edios.adm');
+          }
+          else {
+            navigator['app'].exitApp();
+          }
+        }
+      })
+
+    })
+
+  
+    // var loginRequest = new LoginRequest();
+    // loginRequest.signatureKey = AppConstants.signatureKey
+
+
+    // this.apiservice.AdmAppVersion(loginRequest).then((res) => {
+
+    //   if (this.apiversion != res.data.Result_Output) {
+    //     if (window.confirm("Update Required")) {
+    //       this.market.open('com.edios.adm');
+    //     }
+    //     else {
+    //       navigator['app'].exitApp();
+    //     }
+    //   }
+    // });
   }
 
 

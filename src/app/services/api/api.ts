@@ -19,8 +19,8 @@ export class ApiService {
   }
 
   // baseUrl = "http://202.164.43.200:58080/Aerial_Mobiles_API/";
-  baseUrl = "http://192.168.5.113:58080/Aerial_Mobiles_API/";
-  //  baseUrl = "http://admapi.edios.global:58080/Aerial_Mobiles_API/";
+  // baseUrl = "http://192.168.5.113:58080/Aerial_Mobiles_API/";
+   baseUrl = "http://admapi.edios.global:58080/Aerial_Mobiles_API/";
 
 
    AdmAppVersion(payload: LoginRequest) {

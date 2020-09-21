@@ -30,6 +30,7 @@ import { Broadcaster } from '@ionic-native/broadcaster/ngx';
 import { NgxIonicImageViewerModule } from 'ngx-ionic-image-viewer';
 
 import { AppVersion } from '@ionic-native/app-version/ngx';
+import { Market } from '@ionic-native/market/ngx';
 
 
 
@@ -51,6 +52,7 @@ import { Network } from '@ionic-native/network/ngx';
     NativeStorage,
     Camera,
     HttpClient,
+    Market,
     FileTransfer,
     PhotoViewer,
     ScreenOrientation,
