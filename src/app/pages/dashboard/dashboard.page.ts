@@ -108,9 +108,7 @@ export class DashboardPage implements OnInit {
 
     })
 
-    setTimeout(() => {
-      this.loadUpdatedCaf();
-    }, 1500)
+   
     this.loadDashBoardDetails();
     this.storage.setItem('getBack', "true");
     if (!this.helperclass.isConnected()) {

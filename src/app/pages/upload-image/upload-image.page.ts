@@ -385,7 +385,8 @@ export class UploadImagePage {
             else if(!this.changeStatusOfCaf){
 
               this.helperclass.showLoading("Updating Caf Status...")
-              this.cafDataIntent.cafStatus = 'Pending';
+              // this.cafDataIntent.cafStatus = 'Pending';
+              this.cafDataIntent.cafStatus = 'Docs Not Uploaded';
               this.api.editCafData(this.cafDataIntent)
                 .then((result) => {
                   this.helperclass.dismissLoading()

@@ -244,8 +244,12 @@ if(this.caf.notes){
 
   if(!this.caf.cafStatus){
 
-    this.caf.cafStatus = "Pending"
+    // this.caf.cafStatus = "Pending"
+    this.caf.cafStatus = "Docs Not Uploaded"
   
+  }
+  if(this.caf.cafStatus.startsWith('R')){
+    this.caf.cafStatus = "Docs Not Uploaded"
   }
 
     console.log("Upload" + JSON.stringify(this.caf));
@@ -291,8 +295,44 @@ if(this.caf.notes){
         })
 
     }
+    else if(this.buttonName.startsWith('R')){
+      this.helperclass.showLoading("Resubmitting CAF ..");
+      // this.caf.cafId=null
+      console.log("Edit Caf  Payload is"+JSON.stringify(this.caf))
+      this.apiservice.editCafData(this.caf).
+        then((result) => {
+          this.helperclass.dismissLoading()
+            .then(() => {
+              let response = new GeneralResponse();
+              response = JSON.parse(result.data);
+              console.log("CafeDetailsResponse" + JSON.stringify(result));
+              if (response.Result_Status.startsWith("S")) {
+                let cafId = new cafIdResponse();
+                cafId = response.Result_Output;
+                // this.helperclass.showMessage(message);
+                let navigationExtras: NavigationExtras = {
+                  state: {
+                    CAFID: cafId
+                  }
+                };
+                  this.helperclass.showMessage("CAF Resubmitted Successfully");
+                  this.presentAlertConfirm();
+                
+              }
+
+            })
+        })
+        .catch(err => {
+          this.helperclass.dismissLoading();
+          this.helperclass.showMessage(AppConstants.apiErrorMessage)
+
+          console.error("Uplaod caf Error  is " + JSON.stringify(err));
+
+        })
+    }
 
     else {
+      console.log("Upload new caf",JSON.stringify(this.caf))
 
       let navigationExtras: NavigationExtras = {
         state: {

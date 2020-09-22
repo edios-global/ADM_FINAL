@@ -406,7 +406,8 @@ await alert.present();
       }
   updateCafStatus(){
     this.helperclass.showLoading("Updating Caf Status..")
-    this.cafDataIntent.cafStatus ='Pending';
+    // this.cafDataIntent.cafStatus ='Pending';
+    this.cafDataIntent.cafStatus ='Docs Not Uploaded';
     this.cafDataIntent.cafId =this.cafId;
     console.log("UPLOAD IMAGE change status"+JSON.stringify(this.cafDataIntent))
     this.apiservice.editCafData(this.cafDataIntent)
@@ -419,7 +420,8 @@ await alert.present();
             console.log("UPLOAD IMAGE change status UPLOAD RESPONSE " + JSON.stringify(result));
 
             if (response.Result_Status.startsWith("S")) {
-              this.helperclass.showMessage("CAF Status has been changed to Pending");
+              // this.helperclass.showMessage("CAF Status has been changed to Pending");
+              this.helperclass.showMessage("CAF Status has been changed to Docs Not Uploaded");
             }
             else {
               this.helperclass.showMessage(response.Result_Message);

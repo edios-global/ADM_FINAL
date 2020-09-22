@@ -40,6 +40,7 @@ export class CafSearchResponse {
     fatherName: string
     mobileNumber: string
     cafAuditNotes:string
+    remarks:string
 
 }
 export class cafIdResponse {

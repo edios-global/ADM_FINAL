@@ -60,7 +60,7 @@ export class SearchCafPage implements OnInit {
 
   editCaf(index: number) {
 
-    if (this.searchItems[index].cafStatus == 'Uploaded' || this.searchItems[index].cafStatus == 'Pending'|| this.searchItems[index].cafStatus == 'Rejected') {
+    if (this.searchItems[index].cafStatus == 'Uploaded' || this.searchItems[index].cafStatus == 'Pending' || this.searchItems[index].cafStatus == 'Docs Not Uploaded' || this.searchItems[index].cafStatus == 'Rejected') {
       let navigationExtras: NavigationExtras = {
         state: {
           itemSend: this.searchItems[index]
