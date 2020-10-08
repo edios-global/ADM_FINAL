@@ -59,8 +59,14 @@ export class SearchCafPage implements OnInit {
   }
 
   editCaf(index: number) {
+    console.log("Search Duplicate"+this.searchItems[index].duplicateCafId);
+    
+    if(this.searchItems[index].duplicateCafId){
+      this.helperclass.showMessage("This CAF is Already Resubmitted")
+      return;
+    }
 
-    if (this.searchItems[index].cafStatus == 'Uploaded' || this.searchItems[index].cafStatus == 'Pending' || this.searchItems[index].cafStatus == 'Docs Not Uploaded' || this.searchItems[index].cafStatus == 'Rejected') {
+    if (this.searchItems[index].cafStatus == 'Uploaded' || this.searchItems[index].cafStatus == 'Pending' || this.searchItems[index].cafStatus.startsWith('D') || this.searchItems[index].cafStatus == 'Rejected') {
       let navigationExtras: NavigationExtras = {
         state: {
           itemSend: this.searchItems[index]
@@ -69,6 +75,11 @@ export class SearchCafPage implements OnInit {
       this.router.navigate(['upload-caf'], navigationExtras);
     }
 
+  }
+  ionViewWillEnter(){
+    if(this.cafeItems.length > 0){
+      this.search();
+    }
   }
 
   search() {
@@ -121,7 +132,7 @@ export class SearchCafPage implements OnInit {
         response = JSON.parse(res.data);
         if(response.Result_Status.startsWith("S")){
           this.cafeItems = response.Result_Output;
-          console.log("SEARCH Response" + JSON.stringify(response));
+          console.log("SEARCH Response" + JSON.stringify(res));
           
   
           //FILTER ARRAY ON SEARCH ENTRY

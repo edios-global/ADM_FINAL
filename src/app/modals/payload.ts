@@ -14,6 +14,11 @@ export class SearchCafeRequest {
     distributorId:string
 
 }
+export class ResubmitCafPayload {
+    signatureKey: string
+    cafId:string
+
+}
 export class AppVersionResponse{
     
         Result_Status: string
@@ -25,6 +30,7 @@ export class AppVersionResponse{
 export class CafePayload {
 
     signatureKey: string
+    duplicateCafId:number
     cafType: string
     cafNumber: string
     companyName: string

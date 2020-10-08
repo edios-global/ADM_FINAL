@@ -28,6 +28,7 @@ export class UploadImages {
 export class CafSearchResponse {
 
     noOfConnections: number
+    duplicateCafId : number
     cafNumber: string
     cafId: number
     cafType: string

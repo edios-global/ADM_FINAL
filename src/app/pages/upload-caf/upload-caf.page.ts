@@ -4,7 +4,7 @@ import { GeneralResponse, CafSearchResponse, DistributorDetails, cafIdResponse }
 import { AppConstants } from 'src/app/utils/AppConstants';
 import { ApiService } from 'src/app/services/api/api';
 import { HelperClass } from './../../utils/HelperClasses';
-import { CafePayload } from './../../modals/payload';
+import { CafePayload, ResubmitCafPayload, SearchCafeRequest } from './../../modals/payload';
 import { Component, OnInit } from '@angular/core';
 import { AlertController, PopoverController } from '@ionic/angular';
 import { DashboardComponent } from 'src/app/components/dashboard/dashboard.component';
@@ -21,6 +21,8 @@ export class UploadCafPage implements OnInit {
   placeholder = "Select"
   maxlength = 10;
   iconname  = "chevron-forward-outline"
+  cafeItems: CafSearchResponse[] = [];
+  rejectCafId : string
 
 
   constructor(private helperclass: HelperClass,
@@ -61,6 +63,7 @@ export class UploadCafPage implements OnInit {
       this.caf.fatherName = caf.fatherName;
       this.caf.notes = caf.notes;
       this.caf.cafId = caf.cafId.toString();
+      this.rejectCafId =caf.cafId.toString()
       this.caf.mobileNumber = caf.mobileNumber
       this.newCaf = this.caf;
 
@@ -297,37 +300,43 @@ if(this.caf.notes){
     }
     else if(this.buttonName.startsWith('R')){
       this.helperclass.showLoading("Resubmitting CAF ..");
-      // this.caf.cafId=null
-      console.log("Edit Caf  Payload is"+JSON.stringify(this.caf))
-      this.apiservice.editCafData(this.caf).
-        then((result) => {
-          this.helperclass.dismissLoading()
-            .then(() => {
-              let response = new GeneralResponse();
-              response = JSON.parse(result.data);
-              console.log("CafeDetailsResponse" + JSON.stringify(result));
-              if (response.Result_Status.startsWith("S")) {
-                let cafId = new cafIdResponse();
-                cafId = response.Result_Output;
-                // this.helperclass.showMessage(message);
-                let navigationExtras: NavigationExtras = {
-                  state: {
-                    CAFID: cafId
-                  }
-                };
-                  this.helperclass.showMessage("CAF Resubmitted Successfully");
-                  this.presentAlertConfirm();
-                
-              }
+      const searchPayload = new SearchCafeRequest();
+      searchPayload.signatureKey = AppConstants.signatureKey;
+      searchPayload.distributorId = this.caf.distributorID;
+  
+      this.apiservice.SearchCaf(searchPayload)
+        .then((res) => {
+  
+          //RESPONSE FROM SERVER
+          
+          let response = new GeneralResponse();
+          response = JSON.parse(res.data);
+          if(response.Result_Status.startsWith("S")){
+            this.cafeItems = response.Result_Output;
+            this.cafeItems.forEach(element => {
+              if(element.cafId.toString() == this.rejectCafId){
+                console.log("SEARCH Response" +this.caf.cafId +"  "+element.cafId.toString());
 
-            })
+                if(element.duplicateCafId){
+                  console.log("SEARCH Response duplicate" +element.duplicateCafId);
+
+                  this.helperclass.dismissLoading();
+                  this.helperclass.showMessage("This CAF is Already Resubmitted")
+                  return;
+                }
+                else{
+                  this.resubmitCAf();
+                }
+              }
+            });
+          }
+    
+          
         })
-        .catch(err => {
+        .catch((err) => {
           this.helperclass.dismissLoading();
           this.helperclass.showMessage(AppConstants.apiErrorMessage)
-
-          console.error("Uplaod caf Error  is " + JSON.stringify(err));
-
+          console.error("SEARCH   Error  is " + JSON.stringify(err));
         })
     }
 
@@ -352,6 +361,45 @@ if(this.caf.notes){
 
 
 
+  }
+
+  resubmitCAf(){
+    // var cafId = this.caf.cafId;
+    // this.caf.cafId=null
+    console.log("Edit Caf  Payload is"+JSON.stringify(this.caf))
+    var payload = new ResubmitCafPayload();
+    payload.cafId = this.caf.cafId;
+    payload.signatureKey  = AppConstants.signatureKey;
+    this.apiservice.reSubmitCafdetail(payload).
+      then((result) => {
+        this.helperclass.dismissLoading()
+          .then(() => {
+            let response = new GeneralResponse();
+            response = JSON.parse(result.data);
+            console.log("CafeDetailsResponse" + JSON.stringify(result));
+            if (response.Result_Status.startsWith("S")) {
+              // let cafId = new cafIdResponse();
+              // cafId = response.Result_Output;
+              this.caf.cafId = response.Result_Output.cafId;
+              // this.helperclass.showMessage(message);
+                this.helperclass.showMessage("CAF Resubmitted Successfully");
+                // setTimeout(()=>{
+                //   this.router.navigate(['dashboard']);
+                // },1000)
+                // this.caf.cafId =cafId;
+                this.presentAlertConfirm();
+              
+            }
+
+          })
+      })
+      .catch(err => {
+        this.helperclass.dismissLoading();
+        this.helperclass.showMessage(AppConstants.apiErrorMessage)
+
+        console.error("Uplaod caf Error  is " + JSON.stringify(err));
+
+      })
   }
 
 
@@ -380,7 +428,7 @@ if(this.caf.notes){
           role: 'cancel',
           cssClass: 'secondary',
           handler: () => {
-            //this.router.navigate(['dashboard']);
+            this.router.navigate(['dashboard']);
           }
         }, {
           text: 'Yes',

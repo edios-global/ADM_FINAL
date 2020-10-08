@@ -1,4 +1,4 @@
-import { CafePayload, SearchCafeRequest, EditCafDetail, RemoveDocument } from './../../modals/payload';
+import { CafePayload, SearchCafeRequest, EditCafDetail, RemoveDocument, ResubmitCafPayload } from './../../modals/payload';
 import { LoginRequest, CafeCountRequest } from '../../modals/payload';
 import { Injectable } from '@angular/core';
 import { HTTP } from '@ionic-native/http/ngx';
@@ -19,8 +19,9 @@ export class ApiService {
   }
 
   // baseUrl = "http://202.164.43.200:58080/Aerial_Mobiles_API/";
+  baseUrl = "http://192.168.5.108:58080/Aerial_Mobiles_API/";
   // baseUrl = "http://192.168.5.113:58080/Aerial_Mobiles_API/";
-   baseUrl = "http://admapi.edios.global:58080/Aerial_Mobiles_API/";
+  //  baseUrl = "http://admapi.edios.global:58080/Aerial_Mobiles_API/";
 
    AdmAppVersion(payload: LoginRequest) {
     let apiUrl = this.baseUrl.concat("AdmAppVersion");
@@ -68,6 +69,12 @@ export class ApiService {
     this.http.setDataSerializer('json');
     return this.http.post(apiUrl, payload, {});
   }
+  reSubmitCafdetail(payload: ResubmitCafPayload) {
+    let apiUrl = this.baseUrl.concat("reSubmitCafdetail");
+    this.http.setDataSerializer('json');
+    return this.http.post(apiUrl, payload, {});
+  }
+
 
   getImageByCafId(payload: EditCafDetail) {
     let apiUrl = this.baseUrl.concat("fetchCafImagesByCafID");
