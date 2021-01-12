@@ -1,25 +1,28 @@
-export class LoginRequest {
-
+export class UserCode{
+    distributorUserCode : string
+}
+export class LoginRequest extends UserCode{
+    
     signatureKey: string
     distributorUserCode: string
     distributorUserPassword: string
 
 }
-export class CafeCountRequest {
+export class CafeCountRequest extends UserCode {
     signatureKey: string
     distributorId: number
 }
-export class SearchCafeRequest {
+export class SearchCafeRequest extends UserCode {
     signatureKey: string
     distributorId:string
 
 }
-export class ResubmitCafPayload {
+export class ResubmitCafPayload extends UserCode {
     signatureKey: string
     cafId:string
 
 }
-export class AppVersionResponse{
+export class AppVersionResponse extends UserCode{
     
         Result_Status: string
         Result_Output: string
@@ -27,7 +30,7 @@ export class AppVersionResponse{
     
 }
 
-export class CafePayload {
+export class CafePayload extends UserCode {
 
     signatureKey: string
     duplicateCafId:number
@@ -43,16 +46,17 @@ export class CafePayload {
     cafId : string
     mobileNumber :string
 }
-export class EditCafDetail {
+export class EditCafDetail extends UserCode {
 
     signatureKey: string
     cafId: string
 
 }
-export class RemoveDocument{
+export class RemoveDocument extends UserCode{
     signatureKey: string
     cafId: string
     fileName:string
     deleteNotes:string
 
 }
+

@@ -17,6 +17,7 @@ import { CafePayload } from 'src/app/modals/payload';
 
 import { ViewerModalComponent } from 'ngx-ionic-image-viewer';
 import { ViewImageComponent } from 'src/app/components/view-image/view-image.component';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 
 @Component({
   selector: 'app-upload-image',
@@ -26,7 +27,7 @@ import { ViewImageComponent } from 'src/app/components/view-image/view-image.com
 export class UploadImagePage {
   cameraImages: string[] = []
   cafId = new cafIdResponse;
-
+  distributorUserCode : string;
   responseImagesName: string[] = []
   uploadFile: FileTransferObject
   showImages: string[] = [];
@@ -52,7 +53,7 @@ export class UploadImagePage {
     private photoviewer: PhotoViewer,
     private webview: WebView,
     private router: Router,
-
+    private storage : NativeStorage,
     public modalController: ModalController,
     public popoverCtrl: PopoverController,
     public alertController: AlertController,
@@ -219,13 +220,14 @@ export class UploadImagePage {
     this.uploadCafDetails();
 
   }
-  getUploadImagesPromises() {
+   getUploadImagesPromises() {
     var objArray = [];
     let data = new UploadCafImageData();
     data.baseUrl = this.api.baseUrl;
     data.cafID = this.cafId.cafId.toString();
     data.signatureKey = AppConstants.signatureKey;
-
+    data.distributorUserCode = this.distributorUserCode;
+  
 
     let indeXval = 0;
 
@@ -253,9 +255,11 @@ export class UploadImagePage {
     var objArray = [];
     let options: FileUploadOptions = {
       fileKey: "file",
-      fileName: "myImage.jpg",
+      fileName: "myImage"+"&"+this.distributorUserCode+".jpg",
+      // fileName: "myImage"+"&"+this.distributorUserCode,
+      // fileName: "myImage.jpg",
       chunkedMode: false,
-      httpMethod: "post",
+      httpMethod: "post", 
       params: {},
     };
     this.responseImagesName = [];
@@ -265,10 +269,18 @@ export class UploadImagePage {
       if (this.cameraImages[i].length > 0) {
 
         objArray.push(
-          this.fileTransfer.create().upload(this.cameraImages[i], this.api.baseUrl.concat("UploadCAFimage"), options)
+          this.fileTransfer.create().upload(this.cameraImages[i], this.api.baseUrl.concat("UploadCAFimageV1"), options)
+          // this.fileTransfer.create().upload(this.cameraImages[i], this.api.baseUrl.concat("UploadCAFimage"), options)
             .then(res => {
+              console.log("Uploaded image response "+JSON.stringify(res));
+
+              // this.responseImagesName.push(res.response+"&"+this.distributorUserCode);
               this.responseImagesName.push(res.response);
             })
+            // .catch((err)=>{
+            //   console.log("Uploaded image error  "+JSON.stringify(err));
+
+            // })
         )
       }
     }
@@ -324,7 +336,7 @@ export class UploadImagePage {
       console.error(this.uploadImagePage, JSON.stringify(this.responseImagesName));
 
       Promise.all(this.getUploadImagesPromises())
-        .then(result => {
+        .then(async result => {
           this.helperclass.dismissLoading();
           this.helperclass.showMessage("CAF Images Uploaded successfully For  " + this.buttonName)
           this.showImages = [];
@@ -337,6 +349,10 @@ export class UploadImagePage {
             if (this.changeStatusOfCaf) {
               this.helperclass.showLoading("Updating Caf Status...")
               this.cafDataIntent.cafStatus = 'Uploaded';
+              const code = await this.storage.getItem(AppConstants.distributorCode);
+              this.cafDataIntent.distributorUserCode = code;
+
+
               this.api.editCafData(this.cafDataIntent)
                 .then((result) => {
                   this.helperclass.dismissLoading()
@@ -387,6 +403,10 @@ export class UploadImagePage {
               this.helperclass.showLoading("Updating Caf Status...")
               // this.cafDataIntent.cafStatus = 'Pending';
               this.cafDataIntent.cafStatus = 'Docs Not Uploaded';
+              const code = await this.storage.getItem(AppConstants.distributorCode);
+              this.cafDataIntent.distributorUserCode = code;
+
+
               this.api.editCafData(this.cafDataIntent)
                 .then((result) => {
                   this.helperclass.dismissLoading()
@@ -511,6 +531,9 @@ export class UploadImagePage {
               this.cafPayload.cafStatus = "Uploaded"
               this.cafPayload.cafId =this.cafId.cafId.toString();
               console.log("UPLOAD IMAGE change status"+JSON.stringify(this.cafPayload))
+              const code = await this.storage.getItem(AppConstants.distributorCode);
+              this.cafDataIntent.distributorUserCode = code;
+
               this.api.editCafData(this.cafPayload)
                 .then((result) => {
                   // this.helperclass.dismissLoading()
@@ -572,6 +595,8 @@ export class UploadImagePage {
         })
     })
       .catch(error => {
+        this.helperclass.dismissLoading();
+        this.helperclass.showMessage(AppConstants.apiErrorMessage)
         console.error(" IMAGES UPLOAD  Error ===> " + JSON.stringify(error));
         console.error("IMAGES NAMES ARE ===> " + JSON.stringify(this.responseImagesName));
 
@@ -584,7 +609,7 @@ export class UploadImagePage {
   }
 
 
-  uploadCafDetails() {
+  async uploadCafDetails() {
 
     if (this.times == 0) {
 
@@ -597,6 +622,8 @@ export class UploadImagePage {
       else {
 
         this.helperclass.showLoading("");
+        const code = await this.storage.getItem(AppConstants.distributorCode);
+        this.cafPayload.distributorUserCode = code;
 
         this.api.uploadCaf(this.cafPayload)
           .then((result) => {
@@ -635,6 +662,12 @@ export class UploadImagePage {
     else {
       this.uploadImagesAndData();
     }
+
+  }
+
+  async ionViewWillEnter(){
+    const code = await this.storage.getItem(AppConstants.distributorCode);
+    this.distributorUserCode = code;
 
   }
 

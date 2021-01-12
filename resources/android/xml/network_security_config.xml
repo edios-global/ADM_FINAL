@@ -4,6 +4,7 @@
         <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">202.164.43.200</domain>
         <domain includeSubdomains="true">192.168.5.113</domain>
+        <domain includeSubdomains="true">192.168.5.129</domain>
         <domain includeSubdomains="true">admapi.edios.global</domain>
     </domain-config>
 </network-security-config>

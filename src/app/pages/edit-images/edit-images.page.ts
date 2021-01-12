@@ -10,6 +10,7 @@ import { DashboardComponent } from 'src/app/components/dashboard/dashboard.compo
 import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
 import { ViewerModalComponent } from 'ngx-ionic-image-viewer';
 import { ViewImageComponent } from 'src/app/components/view-image/view-image.component';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 
 @Component({
   selector: 'app-edit-images',
@@ -37,6 +38,7 @@ export class EditImagesPage implements OnInit {
     private helperclass: HelperClass,
     private photoviewer: PhotoViewer,
     public modalController: ModalController,
+    private storage : NativeStorage,
     private alertController: AlertController) {
 
     if (!this.helperclass.isConnected()) {
@@ -58,13 +60,16 @@ export class EditImagesPage implements OnInit {
     }
   }
 
-  ionViewWillEnter() {
+  async ionViewWillEnter() {
 
     var payload = new EditCafDetail();
     payload.cafId = this.cafId;
     payload.signatureKey = AppConstants.signatureKey;
 
     this.hc.showLoading("Loading Images")
+    const code = await this.storage.getItem(AppConstants.distributorCode);
+    payload.distributorUserCode = code;
+
     this.apiservice.getImageByCafId(payload)
       .then(res => {
         this.hc.dismissLoading();
@@ -316,7 +321,7 @@ await alert.present();
 
     }
    
-      removeDocument(image: cafImages, i: number, type: string){
+      async removeDocument(image: cafImages, i: number, type: string){
         // if (window.confirm("Are you sure you want to remove ?")) {
 
           var removePayload = new RemoveDocument();
@@ -325,6 +330,9 @@ await alert.present();
           removePayload.signatureKey = AppConstants.signatureKey;
           removePayload.deleteNotes = this.deleteNotes;
           this.hc.showLoading("Removing..")
+          const code = await this.storage.getItem(AppConstants.distributorCode);
+          removePayload.distributorUserCode = code;
+          
           this.apiservice.removeDocumnet(removePayload)
     
             .then(res => {
@@ -404,12 +412,17 @@ await alert.present();
         // }
     
       }
-  updateCafStatus(){
+  async updateCafStatus(){
     this.helperclass.showLoading("Updating Caf Status..")
     // this.cafDataIntent.cafStatus ='Pending';
     this.cafDataIntent.cafStatus ='Docs Not Uploaded';
     this.cafDataIntent.cafId =this.cafId;
     console.log("UPLOAD IMAGE change status"+JSON.stringify(this.cafDataIntent))
+    
+    const code = await this.storage.getItem(AppConstants.distributorCode);
+    this.cafDataIntent.distributorUserCode = code;
+
+    
     this.apiservice.editCafData(this.cafDataIntent)
       .then((result) => {
         this.helperclass.dismissLoading()

@@ -9,6 +9,7 @@ import { AppConstants } from '../utils/AppConstants';
 import { LoginRequest } from '../modals/payload';
 import { Router } from '@angular/router';
 import { Broadcaster } from '@ionic-native/broadcaster/ngx';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,8 @@ export class LoginService {
   constructor(private helperclass: HelperClass, private apiservice: ApiService,
     private localstorage: LocalStorageService,
     private router: Router,
-    private broadcaster: Broadcaster) { }
+    private broadcaster: Broadcaster,
+    private storage : NativeStorage) { }
 
   /*
   Function to validate login inputs
@@ -52,7 +54,8 @@ export class LoginService {
     loginRequest.distributorUserCode = user.username;
     loginRequest.distributorUserPassword = user.password
     loginRequest.signatureKey = AppConstants.signatureKey
-
+    loginRequest.distributorUserCode = user.username;
+    
 
     this.apiservice.login(loginRequest)
       .then((result) => {
@@ -70,7 +73,8 @@ export class LoginService {
               distributor = response.Result_Output;
               this.localstorage.storeDistributor(distributor);
               Constants.distributorId = distributor.distributorId;
-             
+             this.storage.setItem(AppConstants.distributorCode , distributor.distributorUserCode);
+
               this.broadcaster.fireNativeEvent('user', {user : distributor}).then(() => console.log('broadcast fire success'));
               this.router.navigate(['/dashboard']);
             }

@@ -9,6 +9,7 @@ import { GeneralResponse, CafSearchResponse, DistributorDetails } from 'src/app/
 
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import * as moment from 'moment';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 @Component({
   selector: 'app-search-caf',
   templateUrl: './search-caf.page.html',
@@ -28,6 +29,7 @@ export class SearchCafPage implements OnInit {
 
   constructor(
     private router: Router,
+    private storage  : NativeStorage,
     private localstorageService: LocalStorageService,
     private helperclass: HelperClass, private apiservice: ApiService) {
     this.currentDate = new Date().toISOString();
@@ -82,7 +84,7 @@ export class SearchCafPage implements OnInit {
     }
   }
 
-  search() {
+  async search() {
     if (!this.customerName && !this.cafNumber && !this.mobileNumber && !this.dateFromPicker) {
       this.helperclass.showMessage("Please enter any search keyword");
       return;
@@ -121,7 +123,9 @@ export class SearchCafPage implements OnInit {
     const searchPayload = new SearchCafeRequest();
     searchPayload.signatureKey = AppConstants.signatureKey;
     searchPayload.distributorId = this.searchPayload.distributorId;
-
+    const code = await this.storage.getItem(AppConstants.distributorCode);
+    searchPayload.distributorUserCode = code;
+    
     this.apiservice.SearchCaf(searchPayload)
       .then((res) => {
         this.helperclass.dismissLoading();

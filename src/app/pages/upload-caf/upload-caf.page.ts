@@ -8,6 +8,7 @@ import { CafePayload, ResubmitCafPayload, SearchCafeRequest } from './../../moda
 import { Component, OnInit } from '@angular/core';
 import { AlertController, PopoverController } from '@ionic/angular';
 import { DashboardComponent } from 'src/app/components/dashboard/dashboard.component';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 
 @Component({
   selector: 'app-upload-caf',
@@ -28,6 +29,7 @@ export class UploadCafPage implements OnInit {
   constructor(private helperclass: HelperClass,
     private apiservice: ApiService,
     private router: Router,
+    private storage  : NativeStorage,
     public popoverCtrl: PopoverController,
     private localstorage: LocalStorageService,
     public alertController: AlertController) {
@@ -96,7 +98,7 @@ export class UploadCafPage implements OnInit {
     this.caf.fatherName = event.target.value;
   }
 
-  validateCafe() {
+  async validateCafe() {
 
     if (!this.caf.cafType) {
       this.helperclass.showMessage("Please select CAF type");
@@ -260,6 +262,11 @@ if(this.caf.notes){
     if (this.buttonName == 'Edit') {
       this.helperclass.showLoading("Updating CAF Details..");
       console.log("Edit Caf  Payload is"+JSON.stringify(this.caf))
+     
+      const code = await this.storage.getItem(AppConstants.distributorCode);
+      this.caf.distributorUserCode = code;
+
+      
       this.apiservice.editCafData(this.caf).
         then((result) => {
           this.helperclass.dismissLoading()
@@ -303,7 +310,9 @@ if(this.caf.notes){
       const searchPayload = new SearchCafeRequest();
       searchPayload.signatureKey = AppConstants.signatureKey;
       searchPayload.distributorId = this.caf.distributorID;
-  
+      const code = await this.storage.getItem(AppConstants.distributorCode);
+      searchPayload.distributorUserCode = code;
+      
       this.apiservice.SearchCaf(searchPayload)
         .then((res) => {
   
@@ -363,13 +372,17 @@ if(this.caf.notes){
 
   }
 
-  resubmitCAf(){
+  async resubmitCAf(){
     // var cafId = this.caf.cafId;
     // this.caf.cafId=null
     console.log("Edit Caf  Payload is"+JSON.stringify(this.caf))
     var payload = new ResubmitCafPayload();
     payload.cafId = this.caf.cafId;
     payload.signatureKey  = AppConstants.signatureKey;
+    const code = await this.storage.getItem(AppConstants.distributorCode);
+    payload.distributorUserCode = code;
+
+
     this.apiservice.reSubmitCafdetail(payload).
       then((result) => {
         this.helperclass.dismissLoading()

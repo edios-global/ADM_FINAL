@@ -4,8 +4,10 @@ export enum AppConstants {
       signatureKey = "1234",
       NoInternetConnectionErrMsg = "Please check your internet connection!",
       distributorKey = "distributor",
+      distributorCode = "distributorCode",
       apiErrorMessage = "Something went wrong , please try after some time",
       dateAndTime = "dateAndTime",
+     
 
 
 }

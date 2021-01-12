@@ -142,13 +142,16 @@ export class DashboardPage implements OnInit {
 
       })
   }
-  loadIfStorageIsNotEmpty(res: any) {
+  async loadIfStorageIsNotEmpty(res: any) {
 
     let local: CafSearchResponse[] = JSON.parse(res);
     console.log("local==>" + JSON.stringify(local));
     const searchPayload = new SearchCafeRequest();
     searchPayload.signatureKey = AppConstants.signatureKey;
     searchPayload.distributorId = this.distributorId.toString();
+    const code = await this.storage.getItem(AppConstants.distributorCode);
+    searchPayload.distributorUserCode = code;
+
     this.apiservice.SearchCaf(searchPayload)
       .then((res) => {
         let response = new GeneralResponse();
@@ -198,10 +201,13 @@ export class DashboardPage implements OnInit {
       })
 
   }
-  loadIfStorageIsEmpty() {
+  async loadIfStorageIsEmpty() {
     const searchPayload = new SearchCafeRequest();
     searchPayload.signatureKey = AppConstants.signatureKey;
     searchPayload.distributorId = this.distributorId.toString();
+    const code = await this.storage.getItem(AppConstants.distributorCode);
+    searchPayload.distributorUserCode = code;
+    
     this.apiservice.SearchCaf(searchPayload)
       .then((res) => {
         let response = new GeneralResponse();
@@ -222,11 +228,13 @@ export class DashboardPage implements OnInit {
         // this.helperclass.showMessage(AppConstants.apiErrorMessage)
       })
   }
-  loadDashBoardDetails() {
+  async loadDashBoardDetails() {
     this.helperclass.showLoading("Loading...");
     var caferequest = new CafeCountRequest();
     caferequest.signatureKey = AppConstants.signatureKey;
     caferequest.distributorId = this.distributorId;
+    const code = await this.storage.getItem(AppConstants.distributorCode);
+    caferequest.distributorUserCode = code;
     this.apiservice.cafCountDetails(caferequest)
       .then((res) => {
         this.helperclass.dismissLoading()

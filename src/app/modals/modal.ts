@@ -1,3 +1,5 @@
+import { UserCode } from "./payload";
+
 export class User {
     username: string;
     password: string;
@@ -62,7 +64,7 @@ export class cafImages {
     cafFileUrl: string
 }
 
-export class UploadCafImageData {
+export class UploadCafImageData extends UserCode {
 
     signatureKey: string
     documentType: string
