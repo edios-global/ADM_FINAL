@@ -25,6 +25,8 @@ export class ApiService {
   // baseUrl = "http://192.168.5.108:58080/Aerial_Mobiles_API/";
   // baseUrl = "http://192.168.5.113:58080/Aerial_Mobiles_API/";
   //  baseUrl = "http://admapi.edios.global:58080/Aerial_Mobiles_API/"; // production
+  //  baseUrl = "http://192.168.5.232:8080/Aerial_Mobiles_API/"; // Hemant
+  //  baseUrl = "http://192.168.5.51:8081/Aerial_Mobiles_API/"; // New Test Server
 
    AdmAppVersion(payload: LoginRequest) {
     let apiUrl = this.baseUrl.concat("AdmAppVersion");
@@ -37,8 +39,15 @@ export class ApiService {
     return this.http.post(apiUrl, payload, {});
   }
 
+  //old API
+  // cafCountDetails(payload: CafeCountRequest) {
+  //   let apiUrl = this.baseUrl.concat("fetchCafcountdetails"+this.version);
+  //   this.http.setDataSerializer('json');
+  //   return this.http.post(apiUrl, payload, {});
+  // }
+
   cafCountDetails(payload: CafeCountRequest) {
-    let apiUrl = this.baseUrl.concat("fetchCafcountdetails"+this.version);
+    let apiUrl = this.baseUrl.concat("fetchCafDetailsAndCafCount");
     this.http.setDataSerializer('json');
     return this.http.post(apiUrl, payload, {});
   }

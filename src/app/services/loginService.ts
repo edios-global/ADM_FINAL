@@ -74,6 +74,7 @@ export class LoginService {
               this.localstorage.storeDistributor(distributor);
               Constants.distributorId = distributor.distributorId;
              this.storage.setItem(AppConstants.distributorCode , distributor.distributorUserCode);
+             this.storage.setItem(AppConstants.distributorKey , response.Result_Output);
 
               this.broadcaster.fireNativeEvent('user', {user : distributor}).then(() => console.log('broadcast fire success'));
               this.router.navigate(['/dashboard']);

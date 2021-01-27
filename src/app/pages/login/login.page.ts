@@ -2,7 +2,7 @@ import { LocalStorageService } from './../../services/storage/localStorage';
 
 import { LoginService } from './../../services/loginService';
 import { Component, OnInit } from '@angular/core';
-import { User } from 'src/app/modals/modal';
+import { DistributorDetails, User } from 'src/app/modals/modal';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
@@ -11,6 +11,7 @@ import { AppVersion } from '@ionic-native/app-version/ngx';
 import { LoginRequest, AppVersionResponse } from 'src/app/modals/payload';
 import { AppConstants } from 'src/app/utils/AppConstants';
 import { ApiService } from 'src/app/services/api/api';
+import { HelperClass } from 'src/app/utils/HelperClasses';
 
 @Component({
   selector: 'app-login',
@@ -32,6 +33,7 @@ export class LoginPage implements OnInit {
     private market: Market,
     private appversion: AppVersion,
     private apiservice: ApiService,
+    private helperclass  :HelperClass,
     private platform: Platform) {
     
     // this.localstorageService.getDistributor()
@@ -57,26 +59,62 @@ export class LoginPage implements OnInit {
     console.log("loginGetBack Removed");
   }
 
-  ionViewWillEnter() {
-    this.appversion.getVersionNumber().then((res) => {
-      this.appV = res;
-      var loginRequest = new LoginRequest();
-      loginRequest.signatureKey = AppConstants.signatureKey
-      this.apiservice.AdmAppVersion(loginRequest).then((res) => {
-        var abc: AppVersionResponse = JSON.parse(res.data);
-        console.log("Login  AppUpdate Current "+ this.appV +" ===  Api"+abc.Result_Output)
+  async ionViewWillEnter() {
+    // this.appversion.getVersionNumber().then((res) => {
+    //   this.appV = res;
+    //   var loginRequest = new LoginRequest();
+    //   loginRequest.signatureKey = AppConstants.signatureKey
+    //   this.apiservice.AdmAppVersion(loginRequest).then((res) => {
 
-        if (this.appV != abc.Result_Output) {
+    //     var databaseVersion: AppVersionResponse = JSON.parse(res.data);
+    //     console.log("Login  AppUpdate Current "+ this.appV +" ===  Api"+databaseVersion.Result_Output)
+
+    //     if(databaseVersion.Result_Output){
+
+    //     if (this.appV != databaseVersion.Result_Output) {
+    //       if (window.confirm("Update Required")) {
+    //         this.market.open('com.edios.adm');
+    //       }
+    //       else {
+    //         navigator['app'].exitApp();
+    //       }
+    //     }
+    //   }
+
+    //   })
+
+    // })
+    try{
+     // const distributor  : DistributorDetails = await this.storage.getItem(AppConstants.distributorKey);
+      const appV = await  this.appversion.getVersionNumber();
+      var loginRequest = new LoginRequest();
+      loginRequest.signatureKey = AppConstants.signatureKey;
+      loginRequest.distributorUserCode = "Guest";
+      const res  = await   this.apiservice.AdmAppVersion(loginRequest);
+      var databaseVersion: AppVersionResponse = JSON.parse(res.data);
+
+      console.log(
+              "Loginpage AppUpdate Current " +
+                appV +
+                " ===  Api ===" +
+                JSON.stringify(databaseVersion.Result_Output)
+            );
+
+      if (databaseVersion.Result_Output.map.forceUpdate == "true") {
+        if (appV != databaseVersion.Result_Output.map.versionName) {
           if (window.confirm("Update Required")) {
-            this.market.open('com.edios.adm');
-          }
-          else {
-            navigator['app'].exitApp();
+            this.market.open("com.edios.adm");
+          } else {
+            navigator["app"].exitApp();
           }
         }
-      })
+      }
+    }
+    catch(err){
+      console.log("Loginpage error  "+JSON.stringify(err, Object.getOwnPropertyNames(err))      );
+      // this.helperclass.showMessage(AppConstants.apiErrorMessage)
 
-    })
+    }
 
   
     // var loginRequest = new LoginRequest();

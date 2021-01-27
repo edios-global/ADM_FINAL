@@ -7,6 +7,10 @@
     <ion-title>{{ folder }}</ion-title>
 
     <ion-buttons slot="end" style="margin-right: 5px;">
+      <ion-button (click)="refresh()">
+        <ion-icon name="refresh-outline" style="margin-right: 10px" size="medium" style="font-size: 23px;"></ion-icon>
+      </ion-button>
+
       <ion-button (click)="dashboard()">
         <ion-icon name="search-outline" style="margin-right: 10px" size="medium" style="font-size: 23px;"></ion-icon>
       </ion-button>

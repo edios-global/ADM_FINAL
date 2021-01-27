@@ -22,12 +22,18 @@ export class ResubmitCafPayload extends UserCode {
     cafId:string
 
 }
-export class AppVersionResponse extends UserCode{
+export class AppVersionResponse{
     
         Result_Status: string
-        Result_Output: string
+        Result_Output: any
         Result_Code: string
     
+}
+export class map{
+
+    versionName  : string
+    forceUpdate  : boolean
+
 }
 
 export class CafePayload extends UserCode {

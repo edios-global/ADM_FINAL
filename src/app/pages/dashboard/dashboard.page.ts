@@ -40,7 +40,7 @@ export class DashboardPage implements OnInit {
   appV = "";
 
 
-  constructor(private localstorage: LocalStorageService,
+  constructor(private localstorage: NativeStorage,
     private router: Router,
     private market: Market,
     private appversion: AppVersion,
@@ -52,7 +52,7 @@ export class DashboardPage implements OnInit {
     this.cafeCount.currentMonthApprovedCount = 0
     this.cafeCount.rejectedCount = 0;
     this.cafeCount.uploadedCount = 0
-    this.localstorage.getDistributor()
+    this.localstorage.getItem(AppConstants.distributorKey)
       .then((res) => {
         if (res != null) {
           var distributore = new DistributorDetails();
@@ -86,57 +86,77 @@ export class DashboardPage implements OnInit {
   ngOnInit() {
   }
 
-  ionViewWillEnter() {
-    this.appversion.getVersionNumber().then((res) => {
-      this.appV = res;
+  async ionViewWillEnter() {
+
+    try{
+      
+      
+      const distributor  : DistributorDetails = await this.storage.getItem(AppConstants.distributorKey);
+      const appV = await  this.appversion.getVersionNumber();
       var loginRequest = new LoginRequest();
-      loginRequest.signatureKey = AppConstants.signatureKey
-      this.apiservice.AdmAppVersion(loginRequest).then((res) => {
-        var abc: AppVersionResponse = JSON.parse(res.data);
-        console.log("DashBoard AppUpdate Current "+ this.appV +" ===  Api"+abc.Result_Output)
+      loginRequest.signatureKey = AppConstants.signatureKey;
+      loginRequest.distributorUserCode = distributor.distributorUserCode;
+      const res  = await   this.apiservice.AdmAppVersion(loginRequest);
+      this.helperclass.dismissLoading();
+      var databaseVersion: AppVersionResponse = JSON.parse(res.data);
 
-        if (this.appV != abc.Result_Output) {
-          if (window.confirm("Update Required")) {
-            this.market.open('com.edios.adm');
-          }
-          else {
-            navigator['app'].exitApp();
-          }
-        }
+      console.log(
+              "Dashboard AppUpdate Current " +
+                appV +
+                " ===  Api ===" +
+               JSON.stringify( databaseVersion.Result_Output)
+            );
 
-      })
+            if (databaseVersion.Result_Output.map.forceUpdate == "true") {
+              if (appV != databaseVersion.Result_Output.map.versionName) {
+                if (window.confirm("Update Required")) {
+                  this.market.open("com.edios.adm");
+                } else {
+                  navigator["app"].exitApp();
+                }
+              }
+            }
+    }
+    catch(err){
+      console.log("Dashboard  error  "+JSON.stringify(err));
 
-    })
+    }
 
-   
-    this.loadDashBoardDetails();
     this.storage.setItem('getBack', "true");
     if (!this.helperclass.isConnected()) {
       this.helperclass.showMessage(AppConstants.NoInternetConnectionErrMsg);
       return;
     }
-    this.observableVar = interval(15000).subscribe(() => {
+
+    this.loadDashBoardDetails();
+    
+    this.observableVar = interval(60000).subscribe(() => {
       this.loadDashBoardDetails();
     });
-    this.observableVar1 = interval(1000).subscribe(() => {
-      this.loadUpdatedCaf();
-    });
+    
   }
   ionViewDidLeave() {
     this.observableVar.unsubscribe();
-    this.observableVar1.unsubscribe();
+    // this.observableVar1.unsubscribe();
     this.savedDate = null;
     this.searchItems = [];
 
   }
+
+  refresh(){
+    this.loadDashBoardDetails()
+      
+  }
+
   loadUpdatedCaf() {
+    console.log("Dashboard===> Load Update  CAF")
     this.storage.getItem("cafItems").then((res) => {
-      console.log("dashboard not empty");
+      console.log("Dashboard===> not empty"+JSON.stringify(res));
 
       this.loadIfStorageIsNotEmpty(res);
     })
       .catch((err) => {
-        console.log("dashboard empty");
+        console.log("Dashboard===> empty");
 
         this.loadIfStorageIsEmpty();
 
@@ -145,41 +165,20 @@ export class DashboardPage implements OnInit {
   async loadIfStorageIsNotEmpty(res: any) {
 
     let local: CafSearchResponse[] = JSON.parse(res);
-    console.log("local==>" + JSON.stringify(local));
-    const searchPayload = new SearchCafeRequest();
-    searchPayload.signatureKey = AppConstants.signatureKey;
-    searchPayload.distributorId = this.distributorId.toString();
-    const code = await this.storage.getItem(AppConstants.distributorCode);
-    searchPayload.distributorUserCode = code;
-
-    this.apiservice.SearchCaf(searchPayload)
-      .then((res) => {
-        let response = new GeneralResponse();
-        response = JSON.parse(res.data);
-        if (response.Result_Status.startsWith("S")) {
-          this.cafeItems = response.Result_Output;
-
+    console.log("Dashboard===> local array Size"+local.length);
           this.searchItems = [];
-
-          // if(local != null && local != undefined && local.length !=0) {
-
-          // } else {
-          //   this.searchItems.push(this.cafeItems);
-          // }
           for (var i = 0; i < this.cafeItems.length; i++) {
 
             if (i < local.length) {
-              // if(this.cafeItems[i].cafId == local[i].cafId){
               if (this.cafeItems[i].cafStatus != local[i].cafStatus) {
-                console.log("STATS==>cafeItem status" + this.cafeItems[i].cafStatus);
-                console.log("STATS==>local status" + local[i].cafStatus);
+                console.log("Dashboard===>cafeItem status" + this.cafeItems[i].cafStatus);
+                console.log("Dashboard===>local status" + local[i].cafStatus);
 
                 if (!this.cafeItems[i].cafStatus.startsWith("U"))
 
                   this.searchItems.push(this.cafeItems[i]);
               }
-              //}
-              //}
+            
             }
             else {
               if (!this.cafeItems[i].cafStatus.startsWith("U"))
@@ -192,41 +191,43 @@ export class DashboardPage implements OnInit {
           }
 
           this.storage.setItem("cafItems", JSON.stringify(this.cafeItems));
-        }
+        
 
-      })
-      .catch((err) => {
-        this.helperclass.dismissLoading();
-        // this.helperclass.showMessage(AppConstants.apiErrorMessage)
-      })
+     // })
+      // .catch((err) => {
+      //   this.helperclass.dismissLoading();
+      //   // this.helperclass.showMessage(AppConstants.apiErrorMessage)
+      // })
 
   }
   async loadIfStorageIsEmpty() {
-    const searchPayload = new SearchCafeRequest();
-    searchPayload.signatureKey = AppConstants.signatureKey;
-    searchPayload.distributorId = this.distributorId.toString();
-    const code = await this.storage.getItem(AppConstants.distributorCode);
-    searchPayload.distributorUserCode = code;
+    // const searchPayload = new SearchCafeRequest();
+    // searchPayload.signatureKey = AppConstants.signatureKey;
+    // searchPayload.distributorId = this.distributorId.toString();
+    // const code = await this.storage.getItem(AppConstants.distributorCode);
+    // searchPayload.distributorUserCode = code;
     
-    this.apiservice.SearchCaf(searchPayload)
-      .then((res) => {
-        let response = new GeneralResponse();
-        response = JSON.parse(res.data);
-        if (response.Result_Status.startsWith("S")) {
-          this.cafeItems = response.Result_Output;
+    // this.apiservice.SearchCaf(searchPayload)
+    //   .then((res) => {
+    //     let response = new GeneralResponse();
+    //     response = JSON.parse(res.data);
+    //     if (response.Result_Status.startsWith("S")) {
+    //       this.cafeItems = response.Result_Output;
           this.filterArrayIfDateIsEmpty();
           if (this.searchItems.length > 0) {
             this.openModal();
 
           }
-          this.storage.setItem("cafItems", JSON.stringify(this.cafeItems));
-        }
 
-      })
-      .catch((err) => {
-        this.helperclass.dismissLoading();
-        // this.helperclass.showMessage(AppConstants.apiErrorMessage)
-      })
+          
+          this.storage.setItem("cafItems", JSON.stringify(this.cafeItems));
+        
+
+      // })
+      // .catch((err) => {
+      //   this.helperclass.dismissLoading();
+      //   // this.helperclass.showMessage(AppConstants.apiErrorMessage)
+      // })
   }
   async loadDashBoardDetails() {
     this.helperclass.showLoading("Loading...");
@@ -241,12 +242,16 @@ export class DashboardPage implements OnInit {
           .then(() => {
             let response = new GeneralResponse();
             response = JSON.parse(res.data);
+            this.cafeItems = response.Result_Output;
+            console.log("Dashboard===>  caf items "+JSON.stringify(this.cafeItems))
+
+            let result1 : any[]  = response.Result_Output;
+
+
             if (response.Result_Status.startsWith("S")) {
               var result: CafDetailsResponse[];
-
-              result = response.Result_Output;
+              result = response.Result_Output[result1.length -1].cafCount;
               if (result[0]) {
-
 
                 if (result.length == 1) {
 
@@ -347,6 +352,7 @@ export class DashboardPage implements OnInit {
                 }
 
                 this.daysArray.reverse();
+                this.loadUpdatedCaf()
               }
             }
 
@@ -354,6 +360,8 @@ export class DashboardPage implements OnInit {
       })
       .catch((err) => {
         this.helperclass.dismissLoading();
+        console.log("Dashboard===>  error  "+JSON.stringify(err, Object.getOwnPropertyNames(err))      );
+
       })
   }
 

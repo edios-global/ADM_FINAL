@@ -32,18 +32,32 @@ export class UploadCafPage implements OnInit {
     private storage  : NativeStorage,
     public popoverCtrl: PopoverController,
     private localstorage: LocalStorageService,
-    public alertController: AlertController) {
+    public alertController: AlertController,
+    ) {
 
-    this.localstorage.getDistributor()
+    // this.localstorage.getDistributor()
+    //   .then((res) => {
+    //     console.log("Dashboard distributores details is " + JSON.stringify(res));
+    //     if (res != null) {
+
+    //       var distributore = new DistributorDetails();
+    //       distributore = res;
+    //       this.caf.distributorID = distributore.distributorId.toString();
+    //     }
+    //   })
+
+      this.storage.getItem(AppConstants.distributorKey)
       .then((res) => {
-        console.log("Dashboard distributores details is " + JSON.stringify(res));
         if (res != null) {
+          if (res != null) {
+            var distributore = new DistributorDetails();
+            distributore = res;
+            this.caf.distributorID = distributore.distributorId.toString();
+          }
 
-          var distributore = new DistributorDetails();
-          distributore = res;
-          this.caf.distributorID = distributore.distributorId.toString();
         }
       })
+
 
     if (this.router.getCurrentNavigation().extras.state) {
       this.buttonName = "Edit"

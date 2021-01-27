@@ -11,7 +11,7 @@ import { PopoverController, ActionSheetController, AlertController, ModalControl
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { DashboardComponent } from 'src/app/components/dashboard/dashboard.component';
-import { cafIdResponse, UploadCafImageData, GeneralResponse } from 'src/app/modals/modal';
+import { cafIdResponse, UploadCafImageData, GeneralResponse, DistributorDetails } from 'src/app/modals/modal';
 import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
 import { CafePayload } from 'src/app/modals/payload';
 
@@ -43,7 +43,7 @@ export class UploadImagePage {
   cafDataIntent = new CafePayload();
   uploadImagePage = "UploadImagePage";
   shoDashboardButton = false;
-
+   distributore = new DistributorDetails();
   constructor(private camera: Camera,
     private api: ApiService,
     private helperclass: HelperClass,
@@ -60,7 +60,17 @@ export class UploadImagePage {
     private actionSheetController: ActionSheetController) {
     this.uploadFile = this.fileTransfer.create()
 
+    this.storage.getItem(AppConstants.distributorKey)
+    .then((res) => {
+      if (res != null) {
+       
+        this.distributore = res;
+        this.cafPayload.distributorID = this.distributore.distributorId.toString();
+        this.cafDataIntent.distributorID = this.distributore.distributorId.toString();
 
+      }
+    })
+      
     if (this.router.getCurrentNavigation().extras.state) {
       console.log(this.uploadImagePage, "Intent data extra"+JSON.stringify(this.router.getCurrentNavigation().extras.state));
 
