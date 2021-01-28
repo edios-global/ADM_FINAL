@@ -278,7 +278,7 @@ if(this.caf.notes){
       console.log("Edit Caf  Payload is"+JSON.stringify(this.caf))
      
       const code = await this.storage.getItem(AppConstants.distributorCode);
-      this.caf.distributorUserCode = code;
+      // this.caf.distributorUserCode = code;
 
       
       this.apiservice.editCafData(this.caf).

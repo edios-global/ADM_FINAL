@@ -54,6 +54,7 @@ export class DashboardPage implements OnInit {
     this.cafeCount.uploadedCount = 0
     this.localstorage.getItem(AppConstants.distributorKey)
       .then((res) => {
+        console.log("Dashboard ==> distributors"+JSON.stringify(res))
         if (res != null) {
           var distributore = new DistributorDetails();
           distributore = res;
@@ -151,12 +152,12 @@ export class DashboardPage implements OnInit {
   loadUpdatedCaf() {
     console.log("Dashboard===> Load Update  CAF")
     this.storage.getItem("cafItems").then((res) => {
-      console.log("Dashboard===> not empty"+JSON.stringify(res));
+      // console.log("Dashboard===> not empty"+JSON.stringify(res));
 
       this.loadIfStorageIsNotEmpty(res);
     })
       .catch((err) => {
-        console.log("Dashboard===> empty");
+        // console.log("Dashboard===> empty");
 
         this.loadIfStorageIsEmpty();
 
@@ -165,27 +166,34 @@ export class DashboardPage implements OnInit {
   async loadIfStorageIsNotEmpty(res: any) {
 
     let local: CafSearchResponse[] = JSON.parse(res);
-    console.log("Dashboard===> local array Size"+local.length);
+    // console.log("Dashboard===> local array "+JSON.stringify(res));
           this.searchItems = [];
           for (var i = 0; i < this.cafeItems.length; i++) {
 
             if (i < local.length) {
+
+              // console.log("Dashboard===>server status " + this.cafeItems[i].cafStatus);
+              // console.log("Dashboard===>local status " + local[i].cafStatus);
+
+
               if (this.cafeItems[i].cafStatus != local[i].cafStatus) {
-                console.log("Dashboard===>cafeItem status" + this.cafeItems[i].cafStatus);
-                console.log("Dashboard===>local status" + local[i].cafStatus);
+                // console.log("Dashboard===>server status not equal" + this.cafeItems[i].cafStatus);
+                // console.log("Dashboard===>local status not equal" + local[i].cafStatus);
 
-                if (!this.cafeItems[i].cafStatus.startsWith("U"))
-
+                if (!this.cafeItems[i].cafStatus.startsWith("U")){
                   this.searchItems.push(this.cafeItems[i]);
+                }
               }
             
             }
             else {
+              // console.log("Dashboard===>new Caf status not uploaded " + this.cafeItems[i].cafStatus);
+
               if (!this.cafeItems[i].cafStatus.startsWith("U"))
                 this.searchItems.push(this.cafeItems[i]);
             }
           }
-          console.log("searchItems==>" + this.searchItems);
+          // console.log("searchItems==>" + this.searchItems);
           if (this.searchItems.length > 0) {
             this.openModal();
           }
@@ -221,6 +229,7 @@ export class DashboardPage implements OnInit {
 
           
           this.storage.setItem("cafItems", JSON.stringify(this.cafeItems));
+          // console.log("Dashboard===>Localy saved item is   " + JSON.stringify(this.cafeItems));
         
 
       // })
@@ -242,15 +251,22 @@ export class DashboardPage implements OnInit {
           .then(() => {
             let response = new GeneralResponse();
             response = JSON.parse(res.data);
+            this.cafeItems = [];
             this.cafeItems = response.Result_Output;
-            console.log("Dashboard===>  caf items "+JSON.stringify(this.cafeItems))
+          
 
             let result1 : any[]  = response.Result_Output;
+            console.log("Dashboard===>  caf items result1 "+JSON.stringify(result1.length))
 
 
             if (response.Result_Status.startsWith("S")) {
               var result: CafDetailsResponse[];
               result = response.Result_Output[result1.length -1].cafCount;
+
+              console.log("Dashboard===>  caf items last array size "+JSON.stringify(result.length))
+
+              console.log("Dashboard===>  caf items last array  "+JSON.stringify(result))
+
               if (result[0]) {
 
                 if (result.length == 1) {
@@ -352,6 +368,9 @@ export class DashboardPage implements OnInit {
                 }
 
                 this.daysArray.reverse();
+                this.cafeItems.splice(this.cafeItems.length -1 , 1);
+                console.log("Dashboard===>  caf items "+JSON.stringify(this.cafeItems.length))
+
                 this.loadUpdatedCaf()
               }
             }

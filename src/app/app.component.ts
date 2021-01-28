@@ -49,7 +49,7 @@ export class AppComponent {
     this.initializeApp();
     this.backPressed();
 
-    this.localstorge.getDistributor().then((res) => {
+    this.storage.getItem(AppConstants.distributorKey).then((res) => {
       if (res != null) {
         var distributore = new DistributorDetails();
         distributore = res;
