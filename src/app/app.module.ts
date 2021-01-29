@@ -31,6 +31,7 @@ import { NgxIonicImageViewerModule } from 'ngx-ionic-image-viewer';
 
 import { AppVersion } from '@ionic-native/app-version/ngx';
 import { Market } from '@ionic-native/market/ngx';
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 
 
 
@@ -63,6 +64,7 @@ import { Network } from '@ionic-native/network/ngx';
     Crop,
     AppVersion,
     WebView,
+    LocalNotifications,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

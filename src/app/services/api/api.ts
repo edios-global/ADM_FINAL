@@ -29,7 +29,8 @@ export class ApiService {
   //  baseUrl = "http://192.168.5.51:8081/Aerial_Mobiles_API/"; // New Test Server
 
    AdmAppVersion(payload: LoginRequest) {
-    let apiUrl = this.baseUrl.concat("AdmAppVersion"+this.version);
+    // let apiUrl = this.baseUrl.concat("AdmAppVersion"+this.version);
+    let apiUrl = this.baseUrl.concat("AdmAppVersion");
     this.http.setDataSerializer('json');  
     return this.http.post(apiUrl, payload, {});
   }
