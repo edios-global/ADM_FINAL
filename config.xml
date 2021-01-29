@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="21" id="com.edios.adm" version="1.8" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="23" id="com.edios.adm" version="1.8.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>
 		Aerial Document Management
     </name>
@@ -124,7 +124,7 @@
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.0.5" />
     <allow-navigation href="http://localhost:8101" sessionid="43b6679c" />
     <allow-navigation href="http://localhost:8100" sessionid="5629b8ed" />
+    <plugin name="cordova-plugin-local-notification" spec="^0.9.0-beta.2" />
     <engine name="android" spec="^8.1.0" />
     <engine name="ios" spec="^5.1.1" />
-    <plugin name="cordova-plugin-local-notification" spec="^0.9.0-beta.2" />
 </widget>

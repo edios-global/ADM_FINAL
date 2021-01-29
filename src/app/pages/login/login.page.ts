@@ -102,6 +102,9 @@ export class LoginPage implements OnInit {
 
       if (databaseVersion.Result_Output.map.forceUpdate == "true") {
         if (appV != databaseVersion.Result_Output.map.versionName) {
+          this.storage.remove(AppConstants.distributorKey);
+          this.storage.remove(AppConstants.distributorCode);
+          
           if (window.confirm("Update Required")) {
             this.market.open("com.edios.adm");
           } else {

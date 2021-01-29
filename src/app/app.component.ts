@@ -105,6 +105,9 @@ export class AppComponent {
             );
             if (databaseVersion.Result_Output.map.forceUpdate == "true") {
               if (appV != databaseVersion.Result_Output.map.versionName) {
+                this.storage.remove(AppConstants.distributorKey);
+                this.storage.remove(AppConstants.distributorCode);
+               
                 if (window.confirm("Update Required")) {
                   this.market.open("com.edios.adm");
                 } else {
@@ -145,6 +148,8 @@ export class AppComponent {
      if (databaseVersion.Result_Output.map.forceUpdate == "true") {
        if (appV != databaseVersion.Result_Output.map.versionName) {
          if (window.confirm("Update Required")) {
+          this.storage.remove(AppConstants.distributorKey);
+          this.storage.remove(AppConstants.distributorCode);
            this.market.open("com.edios.adm");
          } else {
            navigator["app"].exitApp();
