@@ -42,7 +42,8 @@
             <ion-card class="block">
               <ion-icon name="trash" class="deleteIcon" style="font-size: 20px !important" (click)="deletePhoto(id)"></ion-icon>
               <!-- <ion-text  class="img_text" *ngIf="this.docType[index]">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{this.docType[id]}}</ion-text> -->
-              <img [src]="DomSanitizer.bypassSecurityTrustUrl(photo)" *ngIf="photo" style="height: 150px;" (click)="showDialog(id)"/>
+              <!-- <img [src]="DomSanitizer.bypassSecurityTrustUrl(photo)" *ngIf="photo" style="height: 150px !important; width: 150px !important;" (click)="showDialog(id)"/> -->
+              <img [src]="photo" *ngIf="photo" style="height: 150px !important; width: 150px !important;" (click)="showDialog(id)"/>
             </ion-card>
           </ion-col>
         </ion-row>
@@ -51,7 +52,6 @@
 
 
       <div *ngIf="this.showImages.length  >0" align="center" style=" padding: 5px;
-      position: fixed;
       bottom:0;
       left: 0;
       right: 0;">

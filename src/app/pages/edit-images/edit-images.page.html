@@ -30,7 +30,7 @@
           <ion-icon name="trash" class="deleteIcon" style="font-size: 20px !important"
             (click)="removeDoucument(item,id,'CAF')">
           </ion-icon>
-          <img [src]="item.cafFileUrl" *ngIf="item.cafFileUrl" (click)="showImage(item)" />
+          <img [src]="item.cafFileUrl" *ngIf="item.cafFileUrl" style="width: 150px !important; height: 150px !important;" (click)="showImage(item)" />
         </ion-card>
       </ion-col>
 

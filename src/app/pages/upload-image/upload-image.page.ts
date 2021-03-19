@@ -18,6 +18,7 @@ import { CafePayload } from 'src/app/modals/payload';
 import { ViewerModalComponent } from 'ngx-ionic-image-viewer';
 import { ViewImageComponent } from 'src/app/components/view-image/view-image.component';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
+import { File } from '@ionic-native/file/ngx';
 
 @Component({
   selector: 'app-upload-image',
@@ -57,6 +58,7 @@ export class UploadImagePage {
     public modalController: ModalController,
     public popoverCtrl: PopoverController,
     public alertController: AlertController,
+    private file: File,
     private actionSheetController: ActionSheetController) {
     this.uploadFile = this.fileTransfer.create()
 
@@ -198,18 +200,45 @@ export class UploadImagePage {
       mediaType: this.camera.MediaType.PICTURE,
       correctOrientation: false,
       sourceType: 1,
-      allowEdit: true
+      // allowEdit: true
     }
 
     this.camera.getPicture(options).then((imageData) => {
-
-      console.log("IMAGE croped url" + imageData)
+      console.log("IMAGE CAMERA IAMGEdATA "+imageData);
+      
+      this.crop.crop(imageData, {quality: 75})
+      .then(
+        newPath => {
+          this.showCroppedImage(newPath.split('?')[0])
+          console.log("IMAGE CROP  IAMGEdATA "+newPath);
+          // this.showImages.push(this.webview.convertFileSrc(newPath.split('?')[0]))
+          this.cameraImages.push(newPath);
+          // this.showImages.push(this.webview.convertFileSrc(newPath));
+          // this.showImages.push(newPath);
+        },
+        error => {
+          alert('Error cropping image' + error);
+        }
+      );
       this.docType.push(mydoc);
-      this.cameraImages.push(imageData);
-      this.showImages.push(this.webview.convertFileSrc(imageData));
+      // this.cameraImages.push(imageData);
+      // this.showImages.push(this.webview.convertFileSrc(imageData));
       this.index++;
     }, (err) => {
       console.log("CHOOSE IMAGE ERROR => " + JSON.stringify(err));
+    });
+  }
+
+  showCroppedImage(ImagePath) {
+    var copyPath = ImagePath;
+    var splitPath = copyPath.split('/');
+    var imageName = splitPath[splitPath.length - 1];
+    var filePath = ImagePath.split(imageName)[0];
+
+    this.file.readAsDataURL(filePath, imageName).then(base64 => {
+      this.showImages.push(base64);
+    }, error => {
+      alert('Error in showing image' + error);
     });
   }
 

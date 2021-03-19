@@ -3,6 +3,7 @@ import { HTTP } from '@ionic-native/http/ngx';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
+import { File } from '@ionic-native/file/ngx';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
@@ -64,6 +65,7 @@ import { Network } from '@ionic-native/network/ngx';
     Crop,
     AppVersion,
     WebView,
+    File,
     LocalNotifications,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],

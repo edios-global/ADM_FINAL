@@ -11,9 +11,7 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
 export class ContactPage implements OnInit {
   
   contactNumber1 = "8588894399"
-  contactNumber2 = "8750045508"
   name1  ="Prabhat Kumar"
-  name2  ="Sudipt"
 
   constructor(private callNumber: CallNumber,
     private storage: NativeStorage,) {
